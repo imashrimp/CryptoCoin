@@ -28,6 +28,7 @@ final class SearchCoinViewModel {
         let searchKeyword = BehaviorRelay<String>(value: "")
         let transitionToCoinChartView = PublishSubject<String>()
         let likeButtonTappedCoin = PublishSubject<Void>()
+        let alreadySavedTenCoins = PublishRelay<Void>()
     }
     
     struct entityModel {
@@ -53,7 +54,6 @@ final class SearchCoinViewModel {
             }
             .flatMap { NetworkManager.getSearchedCoinList(query: $0) }
             .bind(with: self) { owner, value in
-//                owner.output.searchedCoinList.onNext(value)
                 networkResult.accept(value)
             }
             .disposed(by: disposeBag)
@@ -73,14 +73,21 @@ final class SearchCoinViewModel {
         input
             .likeButtonTappedCoin
             .bind(with: self) { owner, value in
-                guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id) else { return }
-                if saveState {
-                    owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
-                } else {
-                    owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
-                }
                 
-                owner.output.likeButtonTappedCoin.onNext(())
+                guard let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else { return }
+                
+                if savedCoinCount < 10 {
+                    guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id) else { return }
+                    if saveState {
+                        owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
+                    } else {
+                        owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
+                    }
+                    
+                    owner.output.likeButtonTappedCoin.onNext(())
+                } else {
+                    owner.output.alreadySavedTenCoins.accept(())
+                }
             }
             .disposed(by: disposeBag)
 

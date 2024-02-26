@@ -60,6 +60,17 @@ final class CoinSearchViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        output.alreadySavedTenCoins
+            .bind(with: self) { owner, _ in
+                let alert = UIAlertController(title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
+                                              message: nil, preferredStyle: .alert)
+                let ok = UIAlertAction(title: "확인", style: .default)
+                alert.addAction(ok)
+                owner.present(alert,
+                              animated: true)
+            }
+            .disposed(by: disposeBag)
+        
         output
             .transitionToCoinChartView
             .bind(with: self) { owner, value in
