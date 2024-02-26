@@ -19,14 +19,15 @@ final class SearchCoinViewModel {
     struct Input {
         let searchWord: ControlProperty<String>
         let searchButtonTapped: ControlEvent<Void>
-//        let likeButtonTapped: ControlEvent<Void>
+        let likeButtonTappedCoin: PublishRelay<SearchedCoinEntity>
         let cellDidSelected: ControlEvent<SearchedCoinEntity>
     }
     
     struct Output {
         let searchedCoinList = BehaviorSubject<[SearchedCoinEntity]>(value: [])
         let searchKeyword = BehaviorRelay<String>(value: "")
-        let showCoinChart = PublishSubject<String>()
+        let transitionToCoinChartView = PublishSubject<String>()
+        let likeButtonTappedCoin = PublishSubject<Void>()
     }
     
     struct entityModel {
@@ -52,7 +53,8 @@ final class SearchCoinViewModel {
             }
             .flatMap { NetworkManager.getSearchedCoinList(query: $0) }
             .bind(with: self) { owner, value in
-                owner.output.searchedCoinList.onNext(value)
+//                owner.output.searchedCoinList.onNext(value)
+                networkResult.accept(value)
             }
             .disposed(by: disposeBag)
             
@@ -62,11 +64,31 @@ final class SearchCoinViewModel {
         }
         .disposed(by: disposeBag)
         
+        networkResult.bind(with: self) { owner, value in
+            owner.output.searchedCoinList.onNext(value)
+        }
+        .disposed(by: disposeBag)
+        
+        
+        input
+            .likeButtonTappedCoin
+            .bind(with: self) { owner, value in
+                guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id) else { return }
+                if saveState {
+                    owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
+                } else {
+                    owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
+                }
+                
+                owner.output.likeButtonTappedCoin.onNext(())
+            }
+            .disposed(by: disposeBag)
+
         
         input
             .cellDidSelected
             .bind(with: self) { owner, coinData in
-                owner.output.showCoinChart.onNext(coinData.id)
+                owner.output.transitionToCoinChartView.onNext(coinData.id)
             }
             .disposed(by: disposeBag)
     }

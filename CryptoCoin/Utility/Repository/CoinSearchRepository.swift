@@ -52,6 +52,16 @@ final class CoinSearchRepository {
         return savedCoinEntityArr
     }
     
+    func checkCoinSaveState(coinId: String) -> Bool {
+        let data = realm.object(ofType: SearchedCoinDTO.self,
+                                forPrimaryKey: coinId)
+        
+        guard let _ = data else {
+            return false
+        }
+        return true
+    }
+    
     //DELETE
     func deleteCryptoCoin(id: String) {
         guard let data = realm.object(ofType: SearchedCoinDTO.self, forPrimaryKey: id) else { return }

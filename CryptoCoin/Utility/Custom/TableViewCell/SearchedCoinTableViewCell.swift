@@ -7,8 +7,15 @@
 
 import UIKit
 import Kingfisher
+import RxSwift
+import RxCocoa
 
 final class SearchedCoinTableViewCell: BaseTableViewCell {
+    
+    private let repository = CoinSearchRepository()
+    
+    let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
+    
     private let logoImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
@@ -61,6 +68,10 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
         guard let url = URL(string: data.logo) else { return }
         logoImageView.kf.setImage(with: url,
                                   options: [.processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100)))])
+        guard let saveState = repository?.checkCoinSaveState(coinId: data.id) else { return }
+        
+        likeButtonImage.image = saveState ? UIImage(systemName: ImageAsset.starFill.name) : UIImage(systemName: ImageAsset.star.name)
+        
         
     }
     

@@ -28,19 +28,13 @@ final class CoinSearchViewController: BaseViewController {
         bind()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        disposeBag = DisposeBag()
-    }
-    
-    deinit {
-        print("이거 되나?")
-    }
-    
     private func bind() {
+        
+        let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
+        
         let input = SearchCoinViewModel.Input(searchWord: baseView.coinSearchBar.rx.text.orEmpty,
-                                              searchButtonTapped: baseView.coinSearchBar.rx.searchButtonClicked,//,
-                                              /*likeButtonTapped: <#T##ControlEvent<Void>#>*/
+                                              searchButtonTapped: baseView.coinSearchBar.rx.searchButtonClicked,
+                                              likeButtonTappedCoin: likeButtonTappedCoin,
                                               cellDidSelected: baseView.searchCoinTableView.rx.modelSelected(SearchedCoinEntity.self))
         
         seachViewModel.transform(input: input)
@@ -54,15 +48,20 @@ final class CoinSearchViewController: BaseViewController {
                 .items(cellIdentifier: SearchedCoinTableViewCell.id,
                        cellType: SearchedCoinTableViewCell.self)) { (row, element, cell) in
                 cell.showContents(keyword: output.searchKeyword.value, data: element)
-//                cell.showContents(data: element)
-//                cell.likeButton.rx.tap
-                    
-            }
+                cell.likeButton.rx.tap
+                    .bind{ likeButtonTappedCoin.accept(element)}
+                    .disposed(by: cell.disposeBag)
+                }
                        .disposed(by: disposeBag)
         
+        output.likeButtonTappedCoin
+            .bind(with: self) { owner, _ in
+                owner.baseView.searchCoinTableView.reloadData()
+            }
+            .disposed(by: disposeBag)
         
         output
-            .showCoinChart
+            .transitionToCoinChartView
             .bind(with: self) { owner, value in
                 let vc = CoinChartViewController(viewModel: CoinCharViewModel(coinId: value))
                 owner.navigationController?.pushViewController(vc,
