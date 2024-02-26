@@ -53,11 +53,13 @@ final class CoinSearchViewController: BaseViewController {
                 .rx
                 .items(cellIdentifier: SearchedCoinTableViewCell.id,
                        cellType: SearchedCoinTableViewCell.self)) { (row, element, cell) in
-                cell.showContents(data: element)
+                cell.showContents(keyword: output.searchKeyword.value, data: element)
+//                cell.showContents(data: element)
 //                cell.likeButton.rx.tap
                     
             }
                        .disposed(by: disposeBag)
+        
         
         output
             .showCoinChart
@@ -67,6 +69,7 @@ final class CoinSearchViewController: BaseViewController {
                                                                animated: true)
             }
             .disposed(by: disposeBag)
+        
         
     }
 }

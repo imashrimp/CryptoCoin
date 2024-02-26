@@ -6,9 +6,10 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class CoinChartViewController: BaseViewController {
-
+    
     private let viewModel: CoinCharViewModel
     private let baseView = CoinChartView()
     
@@ -23,12 +24,24 @@ final class CoinChartViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        bind()
         
     }
-
     
-    override func configure() {
-        super.configure()
+    private func bind() {
+//        let input = CoinCharViewModel.Input(likeButtonTapped: )
+        
+//        viewModel.transform(input: input)
+        
+        let output = viewModel.output
+        
+        output
+            .coinChartData
+            .bind(with: self) { owner, value in
+//                owner.baseView.logoImageView.kf.setImage(with: value.image)
+//                owner.baseView.currentPriceLabel.text = value.currentPrice
+//                owner.baseView.priceChangePercentLabel.text = value.priceChangePercentage24H
+            }
+            .disposed(by: disposeBag)
     }
 }

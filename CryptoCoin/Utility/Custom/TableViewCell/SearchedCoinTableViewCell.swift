@@ -47,8 +47,15 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
     
     let likeButton = UIButton()
     
-    func showContents(data: SearchedCoinEntity) {
+    func showContents(keyword: String, data: SearchedCoinEntity) {
         coinNameLabel.text = data.name
+        
+        let coinName = coinNameLabel.text ?? ""
+        let attribtuedString = NSMutableAttributedString(string: coinName)
+        let range = (coinName as NSString).range(of: keyword)
+        attribtuedString.addAttribute(.foregroundColor, value: UIColor(hexCode: ColorHexCode.purple.colorCode), range: range)
+        coinNameLabel.attributedText = attribtuedString
+        
         currencyUnitLabel.text = data.currencyUnit
         
         guard let url = URL(string: data.logo) else { return }
@@ -62,7 +69,6 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
         coinNameLabel.text = nil
         currencyUnitLabel.text = nil
         logoImageView.image = nil
-        likeButtonImage.image = nil
     }
     
     override func configure() {
@@ -89,7 +95,7 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
         coinNameAndCurrencyUnitStackView.snp.makeConstraints {
             $0.verticalEdges.equalToSuperview().inset(12)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(16)
-            $0.trailing.lessThanOrEqualTo(likeButton.snp.leading).inset(16)
+            $0.trailing.lessThanOrEqualTo(likeButton.snp.leading).offset(-16)
         }
         
         likeButtonImage.snp.makeConstraints {

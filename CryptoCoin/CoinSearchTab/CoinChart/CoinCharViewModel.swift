@@ -12,16 +12,17 @@ import RxCocoa
 final class CoinCharViewModel {
     
     private var disposeBag = DisposeBag()
+    
     private let coinId = PublishSubject<String>()
     
     let output = Output()
     
     struct Input {
-        
+        let likeButtonTapped: ControlEvent<Void>
     }
     
     struct Output {
-        
+        let coinChartData = PublishSubject<CoinChartEntity>()
     }
     
     init(coinId: String) {
@@ -29,9 +30,12 @@ final class CoinCharViewModel {
     }
     
     func transform(input: Input) {
-        coinId.bind(with: self) { owner, value in
-            
-        }
-        .disposed(by: disposeBag)
+        coinId
+            .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0) }
+            .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
+            .bind(with: self) { owner, value in
+                owner.output.coinChartData.onNext(value)
+            }
+            .disposed(by: disposeBag)
     }
 }

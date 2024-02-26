@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct CoinSearchResponseModel: Codable {
+struct CoinSearchResponseModel: Decodable {
     let coins: [Coin]
 }
 
 // MARK: - Coin
-struct Coin: Codable {
+struct Coin: Decodable {
     let id, name, symbol: String
     let large: String
 
