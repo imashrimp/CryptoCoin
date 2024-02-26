@@ -25,6 +25,7 @@ final class CoinSearchView: BaseView {
     
     lazy var searchCoinTableView = {
         let view = UITableView()
+        view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none
         view.register(SearchedCoinTableViewCell.self,
                       forCellReuseIdentifier: SearchedCoinTableViewCell.id)

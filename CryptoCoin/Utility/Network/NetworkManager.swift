@@ -19,14 +19,11 @@ struct NetworkManager {
                     switch response.result {
                     case .success(let value):
                         let result = value.coins
-                            .map { SearchedCoinEntity(id: $0.id, 
+                            .map { SearchedCoinEntity(id: $0.id,
                                                       name: $0.name,
                                                       currencyUnit: $0.symbol,
                                                       logo: $0.large) }
-                        
                         coinList.onNext(result)
-                        
-//                        coinList.onNext(value)
                     case .failure(let error):
                         //TODO: 에러핸들링 수정 필요
                         coinList.onError(error)

@@ -20,7 +20,7 @@ extension CryptoCoinListTarget: TargetType {
     
     var method: HTTPMethod {
         switch self {
-        case .search(let searchWord):
+        case .search(_):
             return .get
         }
     }
