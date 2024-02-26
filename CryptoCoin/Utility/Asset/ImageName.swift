@@ -12,6 +12,9 @@ enum ImageAsset {
     case search
     case wallet
     case person
+    case backButton
+    case star
+    case starFill
     
     var name: String {
         switch self {
@@ -23,6 +26,12 @@ enum ImageAsset {
             return "folder"
         case .person:
             return "person"
+        case .backButton:
+            return "chevron.backward"
+        case .star:
+            return "star"
+        case .starFill:
+            return "star.fill"
         }
     }
 }

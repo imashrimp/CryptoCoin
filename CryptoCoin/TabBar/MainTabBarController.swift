@@ -17,7 +17,7 @@ final class MainTabBarController: UITabBarController, UITabBarControllerDelegate
         self.delegate = self
         
         let trendingVC = UINavigationController(rootViewController: TrendingCoinViewController())
-        let coinSearchVC = UINavigationController(rootViewController: CoinSearchViewController())
+        let coinSearchVC = UINavigationController(rootViewController: CoinSearchViewController(viewModel: SearchCoinViewModel()))
         let myFavoriteVC = UINavigationController(rootViewController: MyFavoriteViewController())
         let myProfileVC = UINavigationController(rootViewController: MyProfileViewController())
         
