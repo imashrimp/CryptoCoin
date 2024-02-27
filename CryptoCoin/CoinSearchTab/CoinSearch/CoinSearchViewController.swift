@@ -74,7 +74,7 @@ final class CoinSearchViewController: BaseViewController {
         output
             .transitionToCoinChartView
             .bind(with: self) { owner, value in
-                let vc = CoinChartViewController(viewModel: CoinCharViewModel(coinId: value))
+                let vc = CoinChartViewController(viewModel: CoinChartViewModel(coinId: value))
                 owner.navigationController?.pushViewController(vc,
                                                                animated: true)
             }

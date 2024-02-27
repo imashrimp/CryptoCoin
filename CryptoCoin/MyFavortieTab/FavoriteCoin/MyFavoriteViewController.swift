@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class MyFavoriteViewController: BaseViewController {
-
+    
     private let baseView = MyFavoriteView()
     private let favoriteCoinViewModel: MyFavoriteViewModel
     
@@ -27,7 +29,8 @@ final class MyFavoriteViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = MyFavoriteViewModel.Input()
+        
+        let input = MyFavoriteViewModel.Input(coinDidSelected: baseView.favoriteCoinCollectionView.rx.modelSelected(FavoriteCoinEntity.self))
         
         favoriteCoinViewModel.transform(input: input)
         
@@ -43,5 +46,13 @@ final class MyFavoriteViewController: BaseViewController {
                 cell.showContents(data: element)
             }
                        .disposed(by: disposeBag)
+        
+        output
+            .selectedCoinId
+            .bind(with: self) { owner, value in
+                owner.navigationController?.pushViewController(FavoriteCoinChartViewController(viewModel: FavoriteCoinChartViewModel(coinID: value)),
+                                                               animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }

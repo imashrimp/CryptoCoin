@@ -18,11 +18,12 @@ final class MyFavoriteViewModel {
     let output = Output()
     
     struct Input {
-        
+        let coinDidSelected: ControlEvent<FavoriteCoinEntity>
     }
     
     struct Output {
         let favoriteCoinArr = PublishRelay<[FavoriteCoinEntity]>()
+        let selectedCoinId = PublishRelay<String>()
     }
     
     init(coinArr: [SavedCoinEntity]) {
@@ -48,6 +49,13 @@ final class MyFavoriteViewModel {
             .flatMap { NetworkManager.getFavoriteCoinArr(query: $0) }
             .bind(with: self) { owner, value in
                 owner.output.favoriteCoinArr.accept(value)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .coinDidSelected
+            .bind(with: self) { owner, value in
+                owner.output.selectedCoinId.accept(value.id)
             }
             .disposed(by: disposeBag)
     }

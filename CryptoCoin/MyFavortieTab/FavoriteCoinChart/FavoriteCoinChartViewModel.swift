@@ -1,24 +1,24 @@
 //
-//  CoinCharViewModel.swift
+//  FavoriteCoinCharViewModel.swift
 //  CryptoCoin
 //
-//  Created by 권현석 on 2/26/24.
+//  Created by 권현석 on 2/27/24.
 //
 
 import Foundation
 import RxSwift
 import RxCocoa
 
-final class CoinCharViewModel {
+final class FavoriteCoinChartViewModel {
     
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     private let coinId = BehaviorSubject<String?>(value: nil)
-    
+
     let output = Output()
     
     struct Input {
-//        let likeButtonTapped: ControlEvent<Void>
+        
     }
     
     struct Output {
@@ -26,8 +26,8 @@ final class CoinCharViewModel {
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
     }
     
-    init(coinId: String) {
-        self.coinId.onNext(coinId)
+    init(coinID: String) {
+        self.coinId.onNext(coinID)
     }
     
     func transform(input: Input) {
@@ -48,8 +48,8 @@ final class CoinCharViewModel {
                 } else {
                     owner.output.priceChangePercentLabelTextColor.onNext(true)
                 }
-                
             }
             .disposed(by: disposeBag)
     }
+    
 }

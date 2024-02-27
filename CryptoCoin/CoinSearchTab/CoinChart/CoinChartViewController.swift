@@ -11,10 +11,10 @@ import DGCharts
 
 final class CoinChartViewController: BaseViewController {
     
-    private let viewModel: CoinCharViewModel
+    private let viewModel: CoinChartViewModel
     private let baseView = CoinChartView()
     
-    init(viewModel: CoinCharViewModel) {
+    init(viewModel: CoinChartViewModel) {
         self.viewModel = viewModel
         super.init()
     }
@@ -30,7 +30,7 @@ final class CoinChartViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = CoinCharViewModel.Input()
+        let input = CoinChartViewModel.Input()
         
         viewModel.transform(input: input)
         
