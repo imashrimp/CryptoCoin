@@ -44,7 +44,6 @@ final class SearchCoinViewModel {
         
         let searchKeyword = BehaviorRelay(value: "")
         let networkResult = PublishRelay<[SearchedCoinEntity]>()
-        
         input.searchButtonTapped
             .withLatestFrom(input.searchWord)
             .distinctUntilChanged()
@@ -57,7 +56,7 @@ final class SearchCoinViewModel {
                 networkResult.accept(value)
             }
             .disposed(by: disposeBag)
-            
+        
         
         searchKeyword.bind(with: self) { owner, value in
             owner.output.searchKeyword.accept(value)
@@ -69,28 +68,28 @@ final class SearchCoinViewModel {
         }
         .disposed(by: disposeBag)
         
-        
         input
             .likeButtonTappedCoin
             .bind(with: self) { owner, value in
                 
-                guard let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else { return }
+                guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id),
+                      let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else {
+                    return
+                }
                 
-                if savedCoinCount < 10 {
-                    guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id) else { return }
-                    if saveState {
-                        owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
-                    } else {
-                        owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
-                    }
-                    
+                if saveState {
+                    owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
                     owner.output.likeButtonTappedCoin.onNext(())
                 } else {
-                    owner.output.alreadySavedTenCoins.accept(())
+                    if savedCoinCount < 10 {
+                        owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
+                        owner.output.likeButtonTappedCoin.onNext(())
+                    } else {
+                        owner.output.alreadySavedTenCoins.accept(())
+                    }
                 }
             }
             .disposed(by: disposeBag)
-
         
         input
             .cellDidSelected

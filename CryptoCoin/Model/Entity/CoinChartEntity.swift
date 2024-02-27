@@ -10,12 +10,11 @@ import Foundation
 struct CoinChartEntity {
     let id, symbol, name: String
     let image: URL
-    let currentPrice: Int
-    let high24H, low24H: Int
-    let priceChangePercentage24H: Double
-    let ath: Int
-    let atl: Int
+    let currentPrice: String
+    let high24H, low24H: String
+    let priceChangePercentage24H: String
+    let ath: String
+    let atl: String
     let lastUpdated: String
     let oneWeekPriceRecord: [Double]
 }
-

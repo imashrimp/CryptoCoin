@@ -13,16 +13,17 @@ final class CoinCharViewModel {
     
     private var disposeBag = DisposeBag()
     
-    private let coinId = PublishSubject<String>()
+    private let coinId = BehaviorSubject<String?>(value: nil)
     
     let output = Output()
     
     struct Input {
-        let likeButtonTapped: ControlEvent<Void>
+//        let likeButtonTapped: ControlEvent<Void>
     }
     
     struct Output {
         let coinChartData = PublishSubject<CoinChartEntity>()
+        let priceChangePercentLabelTextColor = PublishSubject<Bool>()
     }
     
     init(coinId: String) {
@@ -31,10 +32,23 @@ final class CoinCharViewModel {
     
     func transform(input: Input) {
         coinId
-            .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0) }
+            .map{
+                guard let coinId = $0 else { return "" }
+                return coinId
+            }
+            .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0, sparkline: "true" ) }
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
             .bind(with: self) { owner, value in
                 owner.output.coinChartData.onNext(value)
+                
+                let plusOrMinus = value.priceChangePercentage24H.prefix(1)
+                
+                if plusOrMinus == "-" {
+                    owner.output.priceChangePercentLabelTextColor.onNext(false)
+                } else {
+                    owner.output.priceChangePercentLabelTextColor.onNext(true)
+                }
+                
             }
             .disposed(by: disposeBag)
     }

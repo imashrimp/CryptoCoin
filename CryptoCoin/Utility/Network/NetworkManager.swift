@@ -39,33 +39,35 @@ struct NetworkManager {
         return Observable<CoinChartEntity>.create { coinChartInfo in
             API.session.request(CryptoCoinListTarget.coinChart(query))
                 .validate(statusCode: 200...299)
-                .responseDecodable(of: CoinChartResponseModel.self) { response in
+                .responseDecodable(of: [CoinChartResponseModel].self) { response in
                     switch response.result {
                     case .success(let value):
-                        //TODO: 여기서 데이터 정제 다시하기
-                        if let imageURL = URL(string: value.image) {
+                        print(value)
+                        if  let coinData = value.first,
+                            let imageURL = URL(string: coinData.image),
+                            let updateDate = coinData.lastUpdated.toDate() {
                             let result = CoinChartEntity(
-                                id: value.id,
-                                symbol: value.symbol,
-                                name: value.name,
+                                id: coinData.id,
+                                symbol: coinData.symbol,
+                                name: coinData.name,
                                 image: imageURL,
-                                currentPrice: value.currentPrice,
-                                high24H: value.high24H,
-                                low24H: value.low24H,
-                                priceChangePercentage24H: value.priceChangePercentage24H,
-                                ath: value.ath,
-                                atl: value.atl,
-                                lastUpdated: value.lastUpdated,
-                                oneWeekPriceRecord: value.sparklineIn7D.price
+                                currentPrice: coinData.currentPrice.decimal(),
+                                high24H: coinData.high24H.decimal(),
+                                low24H: coinData.low24H.decimal(),
+                                priceChangePercentage24H: coinData.priceChangePercentage24H.convertToPercentage(),
+                                ath: coinData.ath.decimal(),
+                                atl: coinData.atl.decimal(),
+                                lastUpdated: updateDate.toString(format: "M/dd HH:mm:ss") + " 업데이트",
+                                oneWeekPriceRecord: coinData.sparklineIn7D.price
                             )
                             coinChartInfo.onNext(result)
                         }
                     case .failure(let error):
                         coinChartInfo.onError(error)
                     }
-                    
                 }
             return Disposables.create()
         }
     }
 }
+

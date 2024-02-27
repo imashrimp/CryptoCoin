@@ -11,6 +11,7 @@ final class CoinPriceComponent: UIStackView {
     
     let priceTypeTitleLabel = {
         let view = UILabel()
+        view.font 
         return view
     }()
     
@@ -21,6 +22,7 @@ final class CoinPriceComponent: UIStackView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        axis = .vertical
         configure()
     }
     

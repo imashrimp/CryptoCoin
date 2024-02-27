@@ -10,5 +10,5 @@ import Foundation
 struct CoinChartRequestModel: Encodable {
     let vs_currency: String
     let ids: String
-    let sparkline: Bool = true
+    let sparkline: String
 }
