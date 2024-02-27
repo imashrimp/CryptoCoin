@@ -10,7 +10,7 @@ import Foundation
 struct CoinChartResponseModel: Decodable {
     let id, symbol, name: String
     let image: String
-    let currentPrice: Int
+    let currentPrice: Double
     let high24H, low24H: Int
     let priceChangePercentage24H: Double
     let ath: Int

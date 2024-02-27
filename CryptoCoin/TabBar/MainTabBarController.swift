@@ -8,9 +8,14 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
+
+    private let viewModel = MainTabBarViewModel()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
         
         self.tabBar.tintColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
         self.tabBar.barTintColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
@@ -18,7 +23,7 @@ final class MainTabBarController: UITabBarController, UITabBarControllerDelegate
         
         let trendingVC = UINavigationController(rootViewController: TrendingCoinViewController())
         let coinSearchVC = UINavigationController(rootViewController: CoinSearchViewController(viewModel: SearchCoinViewModel()))
-        let myFavoriteVC = UINavigationController(rootViewController: MyFavoriteViewController())
+        let myFavoriteVC = UINavigationController(rootViewController: MyFavoriteViewController(favoriteCoinViewModel: MyFavoriteViewModel(coinArr: viewModel.output.savedCoinArr.value)))
         let myProfileVC = UINavigationController(rootViewController: MyProfileViewController())
         
         

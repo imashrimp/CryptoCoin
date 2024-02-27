@@ -51,7 +51,7 @@ struct NetworkManager {
                                 symbol: coinData.symbol,
                                 name: coinData.name,
                                 image: imageURL,
-                                currentPrice: coinData.currentPrice.decimal(),
+                                currentPrice: coinData.currentPrice.convertToDecimal(),
                                 high24H: coinData.high24H.decimal(),
                                 low24H: coinData.low24H.decimal(),
                                 priceChangePercentage24H: coinData.priceChangePercentage24H.convertToPercentage(),
@@ -64,6 +64,34 @@ struct NetworkManager {
                         }
                     case .failure(let error):
                         coinChartInfo.onError(error)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
+    static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<[FavoriteCoinEntity]> {
+        
+        return Observable<[FavoriteCoinEntity]>.create { favoriteCoinArr in
+            API.session.request(CryptoCoinListTarget.favoriteCoins(query))
+                .validate(statusCode: 200...299)
+                .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
+                    switch response.result {
+                    case .success(let value):
+                        let result = value.map {
+                            FavoriteCoinEntity(
+                                id: $0.id,
+                                currency: $0.symbol,
+                                name: $0.name,
+                                image: $0.image,
+                                currentPrice: $0.currentPrice.convertToDecimal(),
+                                priceChangePercentage24H: $0.priceChangePercentage24H.convertToPercentage()
+                            )
+                        }
+                        favoriteCoinArr.onNext(result)
+                        
+                    case .failure(let error):
+                        favoriteCoinArr.onError(error)
                     }
                 }
             return Disposables.create()

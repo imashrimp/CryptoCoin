@@ -16,7 +16,7 @@ enum RealmError: String, Error {
     case deleteError = "Realm DELETE 에러"
 }
 
-final class CoinSearchRepository {
+final class CoinRepository {
 
     private let realm: Realm
     

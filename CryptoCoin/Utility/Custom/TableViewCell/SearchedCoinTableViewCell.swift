@@ -12,7 +12,7 @@ import RxCocoa
 
 final class SearchedCoinTableViewCell: BaseTableViewCell {
     
-    private let repository = CoinSearchRepository()
+    private let repository = CoinRepository()
     
     let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
     

@@ -12,4 +12,14 @@ extension Double {
         let percentValue = String(format: "%.2f", self)
         return  percentValue + "%"
     }
+    
+    func convertToDecimal() -> String {
+        
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        let result = numberFormatter.string(for: self)
+        
+        guard let result else { return "0.00" }
+        return "₩" + result
+    }
 }

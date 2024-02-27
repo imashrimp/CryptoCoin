@@ -11,7 +11,7 @@ import RxCocoa
 
 final class SearchCoinViewModel {
     
-    private let coinSearchRepository = CoinSearchRepository()
+    private let coinSearchRepository = CoinRepository()
     private let disposeBag = DisposeBag()
     
     let output = Output()

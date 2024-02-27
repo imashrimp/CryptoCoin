@@ -11,6 +11,7 @@ import Alamofire
 enum CryptoCoinListTarget {
     case search(CoinSearchRequestModel)
     case coinChart(CoinChartRequestModel)
+    case favoriteCoins(FavoriteCoinsRequestModel)
 }
 
 extension CryptoCoinListTarget: TargetType {
@@ -20,12 +21,7 @@ extension CryptoCoinListTarget: TargetType {
     }
     
     var method: HTTPMethod {
-        switch self {
-        case .search(_):
-            return .get
-        case .coinChart(_):
-            return .get
-        }
+        return .get
     }
     
     var path: String {
@@ -33,6 +29,8 @@ extension CryptoCoinListTarget: TargetType {
         case .search(_):
             return "/search"
         case .coinChart(_):
+            return "/coins/markets"
+        case .favoriteCoins(_):
             return "/coins/markets"
         }
     }
@@ -42,6 +40,8 @@ extension CryptoCoinListTarget: TargetType {
         case .search(let searchWord):
             return .query(searchWord)
         case .coinChart(let query):
+            return .query(query)
+        case .favoriteCoins(let query):
             return .query(query)
         }
     }
