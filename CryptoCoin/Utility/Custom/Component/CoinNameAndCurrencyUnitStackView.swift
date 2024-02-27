@@ -18,7 +18,7 @@ final class CoinNameAndCurrencyUnitStackView: UIStackView {
     
     let currencyUnitLabel = {
         let view = UILabel()
-        view.font = .systemFont(ofSize: 13,
+        view.font = .systemFont(ofSize: 15,
                                 weight: .bold)
         view.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
         return view

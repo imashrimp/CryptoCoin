@@ -10,6 +10,14 @@ import Kingfisher
 
 final class FavoriteCollectionViewCell: BaseCollectionViewCell {
     
+    private let cellContentBackgroundView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
     private let logoImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
@@ -46,17 +54,29 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
         
         priceLabel.text = data.currentPrice
         priceChangePercentLabel.text = data.priceChangePercentage24H
+        
+        guard let imageURL = URL(string: data.image) else { return }
+        logoImageView.kf.setImage(with: imageURL,
+                                  options: [.processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100))),
+                                            .cacheOriginalImage])
     }
     
     override func configure() {
-        contentView.backgroundColor = UIColor(hexCode: ColorHexCode.white.colorCode)
+        contentView.layer.masksToBounds = false
+        contentView.layer.shadowOpacity = 0.1
+        contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
+        contentView.layer.shadowRadius = 3
+        
+        contentView.addSubview(cellContentBackgroundView)
+        
         [
             logoImageView,
             coinNameAndCurrencyStackView,
             priceInfoVerticalStackView
             //        priceLabel,
             //        priceChangePercentLabel
-        ].forEach { contentView.addSubview($0) }
+            //        ].forEach { contentView.addSubview($0) }
+        ].forEach { cellContentBackgroundView.addSubview($0) }
         
         [
             priceLabel,
@@ -65,6 +85,11 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
     }
     
     override func setConstraints() {
+        
+        cellContentBackgroundView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalTo(coinNameAndCurrencyStackView)
@@ -74,6 +99,7 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
         coinNameAndCurrencyStackView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(12)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(6)
+            $0.trailing.equalToSuperview().inset(16)
         }
         
         priceInfoVerticalStackView.snp.makeConstraints {

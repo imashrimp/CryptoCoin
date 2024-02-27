@@ -40,11 +40,11 @@ final class MyFavoriteViewModel {
         .disposed(by: disposeBag)
         
         coinID
-//            .map { 
-//                guard let coinIds = $0 else { return "" }
-//                return coinIds
-//            }
-            .map { _ in return FavoriteCoinsRequestModel(vs_currency: "krw", ids: "bitcoin, bitget-token") }
+            .map { 
+                guard let coinIds = $0 else { return "" }
+                return coinIds
+            }
+            .map { return FavoriteCoinsRequestModel(vs_currency: "krw", ids: $0) }
             .flatMap { NetworkManager.getFavoriteCoinArr(query: $0) }
             .bind(with: self) { owner, value in
                 owner.output.favoriteCoinArr.accept(value)

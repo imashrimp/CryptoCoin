@@ -20,6 +20,7 @@ final class MyFavoriteView: BaseView {
     lazy var favoriteCoinCollectionView = {
         let view = UICollectionView(frame: .zero,
                                     collectionViewLayout: favoriteCoinCollectionViewFlowlayout())
+        view.showsVerticalScrollIndicator = false
         view.register(FavoriteCollectionViewCell.self,
                       forCellWithReuseIdentifier: FavoriteCollectionViewCell.id)
         return view
@@ -30,15 +31,15 @@ final class MyFavoriteView: BaseView {
         
         let itemSpacing: CGFloat = 20
         
-        ///컬렉션 뷰의 너비에서 컬렉션 셀이 컬렉션 뷰셀의 양 옆으로부터 이격된 거리 만큼 빼주고, 각 열의 갯수 -1의 수를 아이템 간격에 곱한 수를 빼줌
-        let width = UIScreen.main.bounds.width /*- 16 - (itemSpacing * 2)*/ - (itemSpacing * 3)
+        let width = UIScreen.main.bounds.width - (itemSpacing * 3)
         let itemWidth = width / 2
         
         layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
         layout.scrollDirection = .vertical
         
-        layout.minimumLineSpacing = itemSpacing //행이 line
-        layout.minimumInteritemSpacing = itemSpacing//좌우 item간 간격 의미
+        layout.minimumLineSpacing = itemSpacing
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         
         return layout
     }
