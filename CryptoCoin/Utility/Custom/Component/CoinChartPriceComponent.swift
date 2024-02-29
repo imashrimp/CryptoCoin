@@ -7,11 +7,10 @@
 
 import UIKit
 
-final class CoinPriceComponent: UIStackView {
+final class CoinChartPriceComponent: UIStackView {
     
     let priceTypeTitleLabel = {
         let view = UILabel()
-        view.font 
         return view
     }()
     

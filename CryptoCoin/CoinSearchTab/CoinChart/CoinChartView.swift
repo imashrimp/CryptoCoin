@@ -68,7 +68,7 @@ final class CoinChartView: BaseView {
     
     //고가
     let highPriceComponent = {
-        let view = CoinPriceComponent()
+        let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
         view.priceTypeTitleLabel.font = .systemFont(ofSize: 17, weight: .medium)
         view.priceLabel.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
@@ -78,7 +78,7 @@ final class CoinChartView: BaseView {
     }()
     //저가
     let lowPriceComponent = {
-        let view = CoinPriceComponent()
+        let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
         view.priceTypeTitleLabel.font = .systemFont(ofSize: 17, weight: .medium)
         view.priceLabel.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
@@ -88,7 +88,7 @@ final class CoinChartView: BaseView {
     }()
     //신고점
     let highestPriceComponent = {
-        let view = CoinPriceComponent()
+        let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
         view.priceTypeTitleLabel.font = .systemFont(ofSize: 17, weight: .medium)
         view.priceLabel.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
@@ -98,7 +98,7 @@ final class CoinChartView: BaseView {
     }()
     //신저점
     let lowestPriceComponent = {
-        let view = CoinPriceComponent()
+        let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
         view.priceTypeTitleLabel.font = .systemFont(ofSize: 17, weight: .medium)
         view.priceLabel.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)

@@ -11,10 +11,10 @@ struct CoinChartResponseModel: Decodable {
     let id, symbol, name: String
     let image: String
     let currentPrice: Double
-    let high24H, low24H: Int
+    let high24H, low24H: Double
     let priceChangePercentage24H: Double
-    let ath: Int
-    let atl: Int
+    let ath: Double
+    let atl: Double
     let lastUpdated: String
     let sparklineIn7D: SparklineIn7D
     

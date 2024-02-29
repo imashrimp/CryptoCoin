@@ -8,7 +8,7 @@
 import Foundation
 
 struct FavoriteCoinEntity: Decodable {
-    let id, currency, name: String
+    let id, name, currency: String
     let image: String
     let currentPrice: String
     let priceChangePercentage24H: String

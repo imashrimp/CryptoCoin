@@ -19,5 +19,11 @@ extension String {
             return nil
         }
     }
+    
+    func convertToPercent() -> String {
+        guard let percentageNum = Double(self) else { return "" }
+        let result = String(format: "%.2f", percentageNum)
+        return result + "%"
+    }
 }
 

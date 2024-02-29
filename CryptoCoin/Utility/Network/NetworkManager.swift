@@ -10,6 +10,58 @@ import RxSwift
 
 struct NetworkManager {
     
+    static func getTrendingCoinList() -> Observable<[TrendEntity]> {
+        
+        return Observable<[TrendEntity]>.create { trendData in
+            API.session.request(CryptoCoinListTarget.trending)
+                .validate(statusCode: 200...299)
+                .responseDecodable(of: TrendingCoinResponseModel.self) { response in
+                    switch response.result {
+                    case .success(let value):
+
+                        let trendCoinArr = value.coins.map {
+                            PresentItemEntity(
+                                id: $0.item.id,
+                                name: $0.item.name,
+                                currency: $0.item.symbol,
+                                thumbnail: $0.item.thumb,
+                                price: $0.item.data.price,
+                                priceChangePercent24H: $0.item.data.priceChangePercentage24H["krw"]?.convertToPercentage() ?? "0.0%"
+                            )
+                        }
+                        
+                        let trendCoinPresentData = TrendEntity(
+                            sectionTitle: "Top 15 Coin",
+                            data: trendCoinArr
+                        )
+                        
+                        let trendNFTArr = value.nfts.map {
+                            PresentItemEntity(
+                                id: $0.id,
+                                name: $0.name,
+                                currency: $0.symbol,
+                                thumbnail: $0.thumb,
+                                price: $0.data.floorPrice,
+                                priceChangePercent24H: $0.data.floorPriceInUsd24HPercentageChange.convertToPercent()
+                            )
+                        }
+                        
+                        let trendNFTPresentData = TrendEntity(
+                            sectionTitle: "Top 7 NFT",
+                            data: trendNFTArr
+                        )
+                        
+                        let result: [TrendEntity] = [trendCoinPresentData, trendNFTPresentData]
+
+                        trendData.onNext(result)
+                    case .failure(let error):
+                        trendData.onError(error)
+                    }
+                }
+            return Disposables.create()
+        }
+    }
+    
     static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<[SearchedCoinEntity]> {
         
         return Observable<[SearchedCoinEntity]>.create { coinList in
@@ -52,11 +104,11 @@ struct NetworkManager {
                                 name: coinData.name,
                                 image: imageURL,
                                 currentPrice: coinData.currentPrice.convertToDecimal(),
-                                high24H: coinData.high24H.decimal(),
-                                low24H: coinData.low24H.decimal(),
+                                high24H: coinData.high24H.convertToDecimal(),
+                                low24H: coinData.low24H.convertToDecimal(),
                                 priceChangePercentage24H: coinData.priceChangePercentage24H.convertToPercentage(),
-                                ath: coinData.ath.decimal(),
-                                atl: coinData.atl.decimal(),
+                                ath: coinData.ath.convertToDecimal(),
+                                atl: coinData.atl.convertToDecimal(),
                                 lastUpdated: updateDate.toString(format: "M/dd HH:mm:ss") + " 업데이트",
                                 oneWeekPriceRecord: coinData.sparklineIn7D.price
                             )
@@ -70,22 +122,22 @@ struct NetworkManager {
         }
     }
     
-    static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<[FavoriteCoinEntity]> {
+    static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<[PresentItemEntity]> {
         
-        return Observable<[FavoriteCoinEntity]>.create { favoriteCoinArr in
+        return Observable<[PresentItemEntity]>.create { favoriteCoinArr in
             API.session.request(CryptoCoinListTarget.favoriteCoins(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
                     switch response.result {
                     case .success(let value):
                         let result = value.map {
-                            FavoriteCoinEntity(
+                            PresentItemEntity(
                                 id: $0.id,
-                                currency: $0.symbol,
                                 name: $0.name,
-                                image: $0.image,
-                                currentPrice: $0.currentPrice.convertToDecimal(),
-                                priceChangePercentage24H: $0.priceChangePercentage24H.convertToPercentage()
+                                currency: $0.symbol,
+                                thumbnail: $0.image,
+                                price: $0.currentPrice.convertToDecimal(),
+                                priceChangePercent24H: $0.priceChangePercentage24H.convertToPercentage()
                             )
                         }
                         favoriteCoinArr.onNext(result)

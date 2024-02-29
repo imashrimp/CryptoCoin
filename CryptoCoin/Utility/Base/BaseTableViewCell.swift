@@ -14,13 +14,12 @@ class BaseTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.selectionStyle = .none
         configure()
         setConstraints()
     }
     
     func configure() {
-        
+        self.selectionStyle = .none
     }
     
     func setConstraints() {

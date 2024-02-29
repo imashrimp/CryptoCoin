@@ -22,7 +22,7 @@ final class MyFavoriteViewModel {
     }
     
     struct Output {
-        let favoriteCoinArr = PublishRelay<[FavoriteCoinEntity]>()
+        let favoriteCoinArr = PublishRelay<[PresentItemEntity]>()
         let selectedCoinId = PublishRelay<String>()
     }
     

@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 
 enum CryptoCoinListTarget {
+    case trending
     case search(CoinSearchRequestModel)
     case coinChart(CoinChartRequestModel)
     case favoriteCoins(FavoriteCoinsRequestModel)
@@ -32,6 +33,8 @@ extension CryptoCoinListTarget: TargetType {
             return "/coins/markets"
         case .favoriteCoins(_):
             return "/coins/markets"
+        case .trending:
+            return "search/trending"
         }
     }
     
@@ -43,6 +46,8 @@ extension CryptoCoinListTarget: TargetType {
             return .query(query)
         case .favoriteCoins(let query):
             return .query(query)
+        case .trending:
+            return .query(nil)
         }
     }
 }

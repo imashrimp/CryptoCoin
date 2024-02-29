@@ -1,22 +1,14 @@
 //
-//  FavoriteCollectionViewCell.swift
+//  TrandingFavoriteCollectionViewCell.swift
 //  CryptoCoin
 //
-//  Created by 권현석 on 2/27/24.
+//  Created by 권현석 on 2/28/24.
 //
 
 import UIKit
 import Kingfisher
 
-final class FavoriteCollectionViewCell: BaseCollectionViewCell {
-    
-    private let cellContentBackgroundView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.clipsToBounds = true
-        view.layer.cornerRadius = 10
-        return view
-    }()
+final class TrendingFavoriteCollectionViewCell: BaseCollectionViewCell {
     
     private let logoImageView = {
         let view = UIImageView()
@@ -30,14 +22,13 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
                                               weight: .heavy)
         view.currencyUnitLabel.font = .systemFont(ofSize: 15,
                                                   weight: .bold)
-        view.spacing = 4
         return view
     }()
     
     private let priceInfoVerticalStackView = {
         let view = UIStackView()
         view.axis = .vertical
-        view.alignment = .trailing
+        view.alignment = .leading
         view.spacing = 4
         return view
     }()
@@ -69,19 +60,21 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
                                             .cacheOriginalImage])
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+    }
+    
     override func configure() {
-        contentView.layer.masksToBounds = false
-        contentView.layer.shadowOpacity = 0.1
-        contentView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        contentView.layer.shadowRadius = 3
-        
-        contentView.addSubview(cellContentBackgroundView)
-        
+        contentView.clipsToBounds = true
+        contentView.layer.cornerRadius = 10
+        contentView.backgroundColor = UIColor(hexCode: ColorHexCode.lightGray.colorCode)
+
         [
             logoImageView,
             coinNameAndCurrencyStackView,
             priceInfoVerticalStackView
-        ].forEach { cellContentBackgroundView.addSubview($0) }
+        ].forEach { contentView.addSubview($0) }
         
         [
             priceLabel,
@@ -91,27 +84,24 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
     
     override func setConstraints() {
         
-        cellContentBackgroundView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
-        
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.centerY.equalTo(coinNameAndCurrencyStackView)
-            $0.size.equalTo(32)
+            $0.size.equalTo(40)
         }
         
         coinNameAndCurrencyStackView.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(12)
+            $0.top.equalToSuperview().offset(16)
             $0.leading.equalTo(logoImageView.snp.trailing).offset(6)
             $0.trailing.equalToSuperview().inset(16)
         }
         
         priceInfoVerticalStackView.snp.makeConstraints {
-            $0.top.greaterThanOrEqualTo(coinNameAndCurrencyStackView.snp.bottom).offset(20)
-            $0.trailing.bottom.equalToSuperview().inset(16)
-            $0.leading.greaterThanOrEqualToSuperview().offset(16)
+            $0.top.greaterThanOrEqualTo(coinNameAndCurrencyStackView.snp.bottom).offset(8)
+            $0.leading.bottom.equalToSuperview().inset(16)
+            $0.trailing.lessThanOrEqualToSuperview().offset(16)
         }
     }
     
 }
+

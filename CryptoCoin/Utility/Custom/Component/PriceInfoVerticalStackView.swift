@@ -1,25 +1,24 @@
 //
-//  coinNameAndCurrencyUnitStackView.swift
+//  PriceInfoVerticalStackView.swift
 //  CryptoCoin
 //
-//  Created by 권현석 on 2/27/24.
+//  Created by 권현석 on 2/29/24.
 //
 
 import UIKit
 
-final class CoinNameAndCurrencyUnitStackView: UIStackView {
+final class PriceInfoVerticalStackView: UIStackView {
     
-    let coinNameLabel = {
+    let priceLabel = {
         let view = UILabel()
         return view
     }()
     
-    let currencyUnitLabel = {
+    let priceChangePercentLabel = {
         let view = UILabel()
-        view.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
         return view
     }()
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -28,11 +27,11 @@ final class CoinNameAndCurrencyUnitStackView: UIStackView {
     
     private func configure() {
         [
-        coinNameLabel,
-        currencyUnitLabel
+        priceLabel,
+        priceChangePercentLabel
         ].forEach { addArrangedSubview($0) }
     }
-
+    
     @available (*, unavailable)
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
