@@ -64,30 +64,25 @@ final class CoinSearchViewController: BaseViewController {
                 case .saveAlert:
                     owner.alert(
                         title: "\(value.1.name)코인을 즐겨찾기에 저장하시겠습니까?",
-                        leftButtonTitle: "저장",
-                        leftButtonStyle: .default,
-                        leftButtonHandler: { _ in
+                        rightButtonTitle: "저장",
+                        rightButtonHandler: { _ in
                             coinData.accept((AlertPresentEnum.saveAlert, value.1))
                         },
-                        rightButtonTitle: "취소",
-                        rightButtonStyle: .cancel)
+                        defaultButtonTitle: "취소")
                 case .deleteAlert:
                     owner.alert(
                         title: "\(value.1.name)코인을 즐겨찾기에서 삭제하시겠습니까?",
-                        leftButtonTitle: "삭제",
-                        leftButtonStyle: .destructive,
-                        leftButtonHandler: { _ in
+                        rightButtonTitle: "삭제",
+                        rightButtonStyle: .destructive,
+                        rightButtonHandler: { _ in
                             coinData.accept((AlertPresentEnum.deleteAlert, value.1))
                         },
-                        rightButtonTitle: "취소",
-                        rightButtonStyle: .cancel
-                    )
+                        defaultButtonTitle: "취소")
                 case .overLimit:
                     owner.alert(
                         title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
-                        leftButtonTitle: "확인",
-                        leftButtonStyle: .default
-                    )
+                        rightButtonTitle: "확인",
+                        rightButtonStyle: .default)
                 }
             }
             .disposed(by: disposeBag)
@@ -95,17 +90,6 @@ final class CoinSearchViewController: BaseViewController {
         output.likeButtonTappedCoin
             .bind(with: self) { owner, _ in
                 owner.baseView.searchCoinTableView.reloadData()
-            }
-            .disposed(by: disposeBag)
-        
-        output.alreadySavedTenCoins
-            .bind(with: self) { owner, _ in
-                let alert = UIAlertController(title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
-                                              message: nil, preferredStyle: .alert)
-                let ok = UIAlertAction(title: "확인", style: .default)
-                alert.addAction(ok)
-                owner.present(alert,
-                              animated: true)
             }
             .disposed(by: disposeBag)
         

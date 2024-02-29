@@ -12,27 +12,26 @@ extension UIViewController {
     typealias AlertActionHandler = ((UIAlertAction) -> Void)
     
     func alert(title: String,
-               leftButtonTitle: String? = nil,
-               leftButtonStyle: UIAlertAction.Style = .default,
-               leftButtonHandler: AlertActionHandler? = nil,
                rightButtonTitle: String? = nil,
-               rightButtonStyle: UIAlertAction.Style = .cancel) {
+               rightButtonStyle: UIAlertAction.Style = .default,
+               rightButtonHandler: AlertActionHandler? = nil,
+               defaultButtonTitle: String? = nil) {
         
         let alert: UIAlertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         
-        if let okClosure = leftButtonHandler {
-            let okAction: UIAlertAction = UIAlertAction(title: leftButtonTitle, style: leftButtonStyle, handler: okClosure)
-            let cancelAction: UIAlertAction = UIAlertAction(title: rightButtonTitle, style: rightButtonStyle)
+        if let okClosure = rightButtonHandler {
+            let okAction: UIAlertAction = UIAlertAction(title: rightButtonTitle, style: rightButtonStyle, handler: okClosure)
+            let cancelAction: UIAlertAction = UIAlertAction(title: defaultButtonTitle, style: .cancel)
             alert.addAction(okAction)
             alert.addAction(cancelAction)
             
         } else {
-            if let _ = rightButtonTitle {
+            if let _ = defaultButtonTitle {
                 
-                let cancelAction: UIAlertAction = UIAlertAction(title: leftButtonTitle, style: leftButtonStyle)
+                let cancelAction: UIAlertAction = UIAlertAction(title: rightButtonTitle, style: rightButtonStyle)
                 alert.addAction(cancelAction)
             } else {
-                let cancelAction: UIAlertAction = UIAlertAction(title: leftButtonTitle, style: leftButtonStyle)
+                let cancelAction: UIAlertAction = UIAlertAction(title: rightButtonTitle, style: rightButtonStyle)
                 alert.addAction(cancelAction)
             }
             

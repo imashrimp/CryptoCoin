@@ -11,6 +11,7 @@ import RxCocoa
 
 final class FavoriteCoinChartViewModel {
     
+    private let repository = CoinRepository()
     private let disposeBag = DisposeBag()
     
     private let coinId = BehaviorSubject<String?>(value: nil)

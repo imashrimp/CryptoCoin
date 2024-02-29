@@ -32,11 +32,26 @@ final class CoinChartViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap)
+        
+        let coinData = PublishRelay<(AlertPresentEnum, String)>()
+        
+        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap,
+                                             alertActionTapped: coinData)
         
         viewModel.transform(input: input)
         
         let output = viewModel.output
+        
+        output
+            .saveButtonState
+            .bind(with: self) { owner, value in
+                
+                let image = value ? UIImage(systemName: ImageAsset.starFill.name) : UIImage(systemName: ImageAsset.star.name)
+                
+                owner.baseView.likeNavigationBarButton.image = image
+
+            }
+            .disposed(by: disposeBag)
         
         output
             .coinChartData
@@ -74,9 +89,39 @@ final class CoinChartViewController: BaseViewController {
                 owner.baseView.priceChangePercentLabel.textColor = textColor
             }
             .disposed(by: disposeBag)
+        
+        output
+            .presentAlert
+            .bind(with: self) { owner, value in
+                switch value.0 {
+                case .saveAlert:
+                    owner.alert(
+                        title: "코인을 즐겨찾기에 저장하시겠습니까?",
+                        rightButtonTitle: "저장",
+                        rightButtonHandler: { _ in
+                            coinData.accept((AlertPresentEnum.saveAlert, value.1))
+                        },
+                        defaultButtonTitle: "취소")
+                case .deleteAlert:
+                    owner.alert(
+                        title: "코인을 즐겨찾기에서 삭제하시겠습니까?",
+                        rightButtonTitle: "삭제",
+                        rightButtonStyle: .destructive,
+                        rightButtonHandler: { _ in
+                            coinData.accept((AlertPresentEnum.deleteAlert, value.1))
+                        },
+                        defaultButtonTitle: "취소")
+                case .overLimit:
+                    owner.alert(
+                        title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
+                        rightButtonTitle: "확인",
+                        rightButtonStyle: .default)
+                }            }
+            .disposed(by: disposeBag)
     }
     
     override func configure() {
         self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
+        self.navigationController?.navigationBar.tintColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
     }
 }

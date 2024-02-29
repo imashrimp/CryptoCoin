@@ -30,7 +30,11 @@ final class TrendingChartViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap)
+        
+        let coinData = PublishRelay<(AlertPresentEnum, String)>()
+        
+        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap,
+                                             alertActionTapped: coinData)
         
         viewModel.transform(input: input)
         
@@ -75,6 +79,7 @@ final class TrendingChartViewController: BaseViewController {
     }
     
     override func configure() {
+        self.navigationController?.navigationBar.tintColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
         self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
     }
 }

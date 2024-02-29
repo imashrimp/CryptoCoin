@@ -10,10 +10,9 @@ import RxSwift
 import RxCocoa
 
 final class CoinChartViewModel {
-    
-    private var disposeBag = DisposeBag()
-    
+
     private let repository = CoinRepository()
+    private var disposeBag = DisposeBag()
     
     private let coinId = BehaviorSubject<String?>(value: nil)
     
@@ -21,11 +20,14 @@ final class CoinChartViewModel {
     
     struct Input {
         let likeButtonTapped: ControlEvent<Void>
+        let alertActionTapped: PublishRelay<(AlertPresentEnum, String)>
     }
     
     struct Output {
         let coinChartData = PublishSubject<CoinChartEntity>()
+        let saveButtonState = PublishRelay<Bool>()
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
+        let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
     }
     
     init(coinId: String) {
@@ -42,6 +44,11 @@ final class CoinChartViewModel {
             .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0, sparkline: "true" ) }
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
             .bind(with: self) { owner, value in
+                
+                guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: value.id) else { return }
+                
+                owner.output.saveButtonState.accept(coinSaved)
+                
                 owner.output.coinChartData.onNext(value)
                 
                 let plusOrMinus = value.priceChangePercentage24H.prefix(1)
@@ -55,17 +62,40 @@ final class CoinChartViewModel {
             }
             .disposed(by: disposeBag)
         
-//        input
-//            .likeButtonTapped
-//            .withLatestFrom(coinId)
-//            .bind(with: self) { owner, coinId in
-//                guard let coinId,
-//                      let saveState = owner.repository?.checkCoinSaveState(coinId: coinId),
-//                      let savedCoinCount = owner.repository?.readSavedCryptoCoinList().count else { return }
-//                
-//                
-//                
-//            }
-//            .disposed(by: disposeBag)
+        input
+            .likeButtonTapped
+            .withLatestFrom(coinId)
+            .bind(with: self) { owner, coinId in
+                guard let coinId,
+                      let saveState = owner.repository?.checkCoinSaveState(coinId: coinId),
+                      let savedCoinCount = owner.repository?.readSavedCryptoCoinList().count else { return }
+                
+                if saveState {
+                    owner.output.presentAlert.accept((AlertPresentEnum.deleteAlert, coinId))
+                } else {
+                    if savedCoinCount < 10 {
+                        owner.output.presentAlert.accept((AlertPresentEnum.saveAlert, coinId))
+                    } else {
+                        owner.output.presentAlert.accept((AlertPresentEnum.overLimit, coinId))
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .alertActionTapped
+            .bind(with: self) { owner, value in
+                switch value.0 {
+                case .saveAlert:
+                    owner.repository?.saveCryptoCoin(id: value.1)
+                    owner.output.saveButtonState.accept(true)
+                case .deleteAlert:
+                    owner.repository?.deleteCryptoCoin(id: value.1)
+                    owner.output.saveButtonState.accept(false)
+                case .overLimit:
+                    return
+                }
+            }
+            .disposed(by: disposeBag)
     }
 }

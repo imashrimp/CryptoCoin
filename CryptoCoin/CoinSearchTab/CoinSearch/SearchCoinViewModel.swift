@@ -30,8 +30,6 @@ final class SearchCoinViewModel {
         let transitionToCoinChartView = PublishSubject<String>()
         let likeButtonTappedCoin = PublishSubject<Void>()
         let presentAlert = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
-        //        let presentDeleteCoinAlert = PublishRelay<SearchedCoinEntity>()
-        let alreadySavedTenCoins = PublishRelay<Void>()
     }
     
     struct entityModel {
@@ -71,9 +69,7 @@ final class SearchCoinViewModel {
             .likeButtonTapped
             .bind(with: self) { owner, value in
                 guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id),
-                      let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else {
-                    return
-                }
+                      let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else { return }
                 
                 if saveState {
                     owner.output.presentAlert.accept((AlertPresentEnum.deleteAlert, value))

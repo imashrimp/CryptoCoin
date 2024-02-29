@@ -18,7 +18,6 @@ final class FavoriteCoinChartViewController: BaseViewController {
         self.viewModel = viewModel
         super.init()
     }
-
     
     override func loadView() {
         self.view = baseView
@@ -76,6 +75,7 @@ final class FavoriteCoinChartViewController: BaseViewController {
     }
     
     override func configure() {
+        self.navigationController?.navigationBar.tintColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
         self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
     }
 }
