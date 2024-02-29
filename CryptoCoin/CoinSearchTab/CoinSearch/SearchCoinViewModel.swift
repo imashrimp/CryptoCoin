@@ -19,7 +19,8 @@ final class SearchCoinViewModel {
     struct Input {
         let searchWord: ControlProperty<String>
         let searchButtonTapped: ControlEvent<Void>
-        let likeButtonTappedCoin: PublishRelay<SearchedCoinEntity>
+        let likeButtonTapped: PublishRelay<SearchedCoinEntity>
+        let alertActionTapped: PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>
         let cellDidSelected: ControlEvent<SearchedCoinEntity>
     }
     
@@ -28,16 +29,14 @@ final class SearchCoinViewModel {
         let searchKeyword = BehaviorRelay<String>(value: "")
         let transitionToCoinChartView = PublishSubject<String>()
         let likeButtonTappedCoin = PublishSubject<Void>()
+        let presentAlert = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
+        //        let presentDeleteCoinAlert = PublishRelay<SearchedCoinEntity>()
         let alreadySavedTenCoins = PublishRelay<Void>()
     }
     
     struct entityModel {
         let data: [SearchedCoinEntity]
         let stringtext: String
-    }
-    
-    init() {
-        
     }
     
     func transform(input: Input) {
@@ -69,24 +68,37 @@ final class SearchCoinViewModel {
         .disposed(by: disposeBag)
         
         input
-            .likeButtonTappedCoin
+            .likeButtonTapped
             .bind(with: self) { owner, value in
-                
                 guard let saveState = owner.coinSearchRepository?.checkCoinSaveState(coinId: value.id),
                       let savedCoinCount = owner.coinSearchRepository?.readSavedCryptoCoinList().count else {
                     return
                 }
                 
                 if saveState {
-                    owner.coinSearchRepository?.deleteCryptoCoin(id: value.id)
-                    owner.output.likeButtonTappedCoin.onNext(())
+                    owner.output.presentAlert.accept((AlertPresentEnum.deleteAlert, value))
                 } else {
                     if savedCoinCount < 10 {
-                        owner.coinSearchRepository?.saveCryptoCoin(id: value.id)
-                        owner.output.likeButtonTappedCoin.onNext(())
+                        owner.output.presentAlert.accept((AlertPresentEnum.saveAlert, value))
                     } else {
-                        owner.output.alreadySavedTenCoins.accept(())
+                        owner.output.presentAlert.accept((AlertPresentEnum.overLimit, value))
                     }
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .alertActionTapped
+            .bind(with: self) { owner, value in
+                switch value.0 {
+                case .saveAlert:
+                    owner.coinSearchRepository?.saveCryptoCoin(id: value.1.id)
+                    owner.output.likeButtonTappedCoin.onNext(())
+                case .deleteAlert:
+                    owner.coinSearchRepository?.deleteCryptoCoin(id: value.1.id)
+                    owner.output.likeButtonTappedCoin.onNext(())
+                case .overLimit:
+                    return
                 }
             }
             .disposed(by: disposeBag)

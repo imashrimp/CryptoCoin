@@ -45,8 +45,6 @@ final class MainTabBarController: UITabBarController, UITabBarControllerDelegate
         myFavoriteVC.tabBarItem = myFavoriteTabItem
         myProfileVC.tabBarItem = myProfileTabItem
         
-        
-        
         self.viewControllers = [trendingVC,
                                 coinSearchVC,
                                 myFavoriteVC,

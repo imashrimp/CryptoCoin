@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 import DGCharts
 
 final class TrendingChartViewController: BaseViewController {
@@ -28,7 +30,7 @@ final class TrendingChartViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = CoinChartViewModel.Input()
+        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap)
         
         viewModel.transform(input: input)
         
@@ -70,5 +72,9 @@ final class TrendingChartViewController: BaseViewController {
                 owner.baseView.priceChangePercentLabel.textColor = textColor
             }
             .disposed(by: disposeBag)
+    }
+    
+    override func configure() {
+        self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
     }
 }

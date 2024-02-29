@@ -49,6 +49,8 @@ final class TrendingViewController: BaseViewController {
         output
             .pushToChart
             .bind(with: self) { owner, coinId in
+                let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                owner.navigationItem.backBarButtonItem = backButtonItem
                 owner.navigationController?.pushViewController(TrendingChartViewController(viewModel: CoinChartViewModel(coinId: coinId)),
                                                                animated: true)
             }

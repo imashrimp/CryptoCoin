@@ -13,12 +13,14 @@ final class CoinChartViewModel {
     
     private var disposeBag = DisposeBag()
     
+    private let repository = CoinRepository()
+    
     private let coinId = BehaviorSubject<String?>(value: nil)
     
     let output = Output()
     
     struct Input {
-//        let likeButtonTapped: ControlEvent<Void>
+        let likeButtonTapped: ControlEvent<Void>
     }
     
     struct Output {
@@ -31,6 +33,7 @@ final class CoinChartViewModel {
     }
     
     func transform(input: Input) {
+        
         coinId
             .map{
                 guard let coinId = $0 else { return "" }
@@ -51,5 +54,18 @@ final class CoinChartViewModel {
                 
             }
             .disposed(by: disposeBag)
+        
+//        input
+//            .likeButtonTapped
+//            .withLatestFrom(coinId)
+//            .bind(with: self) { owner, coinId in
+//                guard let coinId,
+//                      let saveState = owner.repository?.checkCoinSaveState(coinId: coinId),
+//                      let savedCoinCount = owner.repository?.readSavedCryptoCoinList().count else { return }
+//                
+//                
+//                
+//            }
+//            .disposed(by: disposeBag)
     }
 }

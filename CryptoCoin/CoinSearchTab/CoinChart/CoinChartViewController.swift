@@ -7,6 +7,8 @@
 
 import UIKit
 import Kingfisher
+import RxSwift
+import RxCocoa
 import DGCharts
 
 final class CoinChartViewController: BaseViewController {
@@ -30,7 +32,7 @@ final class CoinChartViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = CoinChartViewModel.Input()
+        let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap)
         
         viewModel.transform(input: input)
         
@@ -72,5 +74,9 @@ final class CoinChartViewController: BaseViewController {
                 owner.baseView.priceChangePercentLabel.textColor = textColor
             }
             .disposed(by: disposeBag)
+    }
+    
+    override func configure() {
+        self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
     }
 }

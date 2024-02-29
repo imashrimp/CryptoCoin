@@ -50,6 +50,8 @@ final class MyFavoriteViewController: BaseViewController {
         output
             .selectedCoinId
             .bind(with: self) { owner, value in
+                let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                owner.navigationItem.backBarButtonItem = backButtonItem
                 owner.navigationController?.pushViewController(FavoriteCoinChartViewController(viewModel: FavoriteCoinChartViewModel(coinID: value)),
                                                                animated: true)
             }

@@ -10,6 +10,14 @@ import DGCharts
 
 final class CoinChartView: BaseView {
     
+    let likeNavigationBarButton = {
+        let view = UIBarButtonItem(image: UIImage(systemName: ImageAsset.star.name),
+                                   style: .plain,
+                                   target: nil,
+                                   action: nil)
+        return view
+    }()
+    
     let logoImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit

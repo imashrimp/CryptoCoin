@@ -32,9 +32,12 @@ final class CoinSearchViewController: BaseViewController {
         
         let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
         
+        let coinData = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
+        
         let input = SearchCoinViewModel.Input(searchWord: baseView.coinSearchBar.rx.text.orEmpty,
                                               searchButtonTapped: baseView.coinSearchBar.rx.searchButtonClicked,
-                                              likeButtonTappedCoin: likeButtonTappedCoin,
+                                              likeButtonTapped: likeButtonTappedCoin, 
+                                              alertActionTapped: coinData,
                                               cellDidSelected: baseView.searchCoinTableView.rx.modelSelected(SearchedCoinEntity.self))
         
         seachViewModel.transform(input: input)
@@ -53,6 +56,41 @@ final class CoinSearchViewController: BaseViewController {
                     .disposed(by: cell.disposeBag)
                 }
                        .disposed(by: disposeBag)
+        
+        output
+            .presentAlert
+            .bind(with: self) { owner, value in
+                switch value.0 {
+                case .saveAlert:
+                    owner.alert(
+                        title: "\(value.1.name)코인을 즐겨찾기에 저장하시겠습니까?",
+                        leftButtonTitle: "저장",
+                        leftButtonStyle: .default,
+                        leftButtonHandler: { _ in
+                            coinData.accept((AlertPresentEnum.saveAlert, value.1))
+                        },
+                        rightButtonTitle: "취소",
+                        rightButtonStyle: .cancel)
+                case .deleteAlert:
+                    owner.alert(
+                        title: "\(value.1.name)코인을 즐겨찾기에서 삭제하시겠습니까?",
+                        leftButtonTitle: "삭제",
+                        leftButtonStyle: .destructive,
+                        leftButtonHandler: { _ in
+                            coinData.accept((AlertPresentEnum.deleteAlert, value.1))
+                        },
+                        rightButtonTitle: "취소",
+                        rightButtonStyle: .cancel
+                    )
+                case .overLimit:
+                    owner.alert(
+                        title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
+                        leftButtonTitle: "확인",
+                        leftButtonStyle: .default
+                    )
+                }
+            }
+            .disposed(by: disposeBag)
         
         output.likeButtonTappedCoin
             .bind(with: self) { owner, _ in
@@ -75,6 +113,8 @@ final class CoinSearchViewController: BaseViewController {
             .transitionToCoinChartView
             .bind(with: self) { owner, value in
                 let vc = CoinChartViewController(viewModel: CoinChartViewModel(coinId: value))
+                let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                owner.navigationItem.backBarButtonItem = backButtonItem
                 owner.navigationController?.pushViewController(vc,
                                                                animated: true)
             }

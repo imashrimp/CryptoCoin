@@ -75,6 +75,7 @@ final class FavoriteCoinChartViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    
-    
+    override func configure() {
+        self.navigationItem.rightBarButtonItem = baseView.likeNavigationBarButton
+    }
 }
