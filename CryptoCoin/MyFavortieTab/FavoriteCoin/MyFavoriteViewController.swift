@@ -30,7 +30,10 @@ final class MyFavoriteViewController: BaseViewController {
     
     private func bind() {
         
-        let input = MyFavoriteViewModel.Input(coinDidSelected: baseView.favoriteCoinCollectionView.rx.modelSelected(FavoriteCoinEntity.self))
+        let updateFavoriteCoinList = PublishRelay<Void>()
+        
+        let input = MyFavoriteViewModel.Input(coinDidSelected: baseView.favoriteCoinCollectionView.rx.modelSelected(PresentItemEntity.self), 
+                                              updateFavoriteCoinList: updateFavoriteCoinList)
         
         favoriteCoinViewModel.transform(input: input)
         
@@ -52,7 +55,13 @@ final class MyFavoriteViewController: BaseViewController {
             .bind(with: self) { owner, value in
                 let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
                 owner.navigationItem.backBarButtonItem = backButtonItem
-                owner.navigationController?.pushViewController(FavoriteCoinChartViewController(viewModel: FavoriteCoinChartViewModel(coinID: value)),
+                
+                let viewModel = FavoriteCoinChartViewModel(coinID: value)
+                viewModel.updateFavoriteCoinList = {
+                    updateFavoriteCoinList.accept(())
+                }
+                
+                owner.navigationController?.pushViewController(FavoriteCoinChartViewController(viewModel: viewModel),
                                                                animated: true)
             }
             .disposed(by: disposeBag)

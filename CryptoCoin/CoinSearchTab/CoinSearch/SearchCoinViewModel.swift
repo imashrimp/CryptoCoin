@@ -30,6 +30,7 @@ final class SearchCoinViewModel {
         let transitionToCoinChartView = PublishSubject<String>()
         let likeButtonTappedCoin = PublishSubject<Void>()
         let presentAlert = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
+        let savedCoinIds = BehaviorRelay<[String]>(value: [])
     }
     
     struct entityModel {
@@ -50,6 +51,11 @@ final class SearchCoinViewModel {
             }
             .flatMap { NetworkManager.getSearchedCoinList(query: $0) }
             .bind(with: self) { owner, value in
+                
+                guard let savedCoinList = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+                let coinIds = savedCoinList.map { $0.coinID }
+                
+                owner.output.savedCoinIds.accept(coinIds)
                 networkResult.accept(value)
             }
             .disposed(by: disposeBag)

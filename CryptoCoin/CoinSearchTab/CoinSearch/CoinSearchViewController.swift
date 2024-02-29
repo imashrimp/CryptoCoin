@@ -29,9 +29,8 @@ final class CoinSearchViewController: BaseViewController {
     }
     
     private func bind() {
-        
+        let updateFavoriteCoinList = PublishRelay<Void>()
         let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
-        
         let coinData = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
         
         let input = SearchCoinViewModel.Input(searchWord: baseView.coinSearchBar.rx.text.orEmpty,
@@ -50,7 +49,9 @@ final class CoinSearchViewController: BaseViewController {
                 .rx
                 .items(cellIdentifier: SearchedCoinTableViewCell.id,
                        cellType: SearchedCoinTableViewCell.self)) { (row, element, cell) in
-                cell.showContents(keyword: output.searchKeyword.value, data: element)
+                cell.showContents(keyword: output.searchKeyword.value, 
+                                  data: element,
+                                  savedCoinid: output.savedCoinIds.value)
                 cell.likeButton.rx.tap
                     .bind{ likeButtonTappedCoin.accept(element)}
                     .disposed(by: cell.disposeBag)
@@ -96,7 +97,12 @@ final class CoinSearchViewController: BaseViewController {
         output
             .transitionToCoinChartView
             .bind(with: self) { owner, value in
-                let vc = CoinChartViewController(viewModel: CoinChartViewModel(coinId: value))
+                let viewModel = CoinChartViewModel(coinId: value)
+                viewModel.updateFavoriteCoinList = {
+                    
+                }
+                
+                let vc = CoinChartViewController(viewModel: viewModel)
                 let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
                 owner.navigationItem.backBarButtonItem = backButtonItem
                 owner.navigationController?.pushViewController(vc,

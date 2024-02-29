@@ -116,7 +116,8 @@ final class CoinChartViewController: BaseViewController {
                         title: "코인 즐겨찾기는 최대 10개까지 가능합니다",
                         rightButtonTitle: "확인",
                         rightButtonStyle: .default)
-                }            }
+                }
+            }
             .disposed(by: disposeBag)
     }
     

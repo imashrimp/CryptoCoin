@@ -10,6 +10,8 @@ import RxSwift
 import RxCocoa
 
 final class CoinChartViewModel {
+    
+    var updateFavoriteCoinList: (() -> Void)?
 
     private let repository = CoinRepository()
     private var disposeBag = DisposeBag()
@@ -89,9 +91,11 @@ final class CoinChartViewModel {
                 case .saveAlert:
                     owner.repository?.saveCryptoCoin(id: value.1)
                     owner.output.saveButtonState.accept(true)
+                    owner.updateFavoriteCoinList?()
                 case .deleteAlert:
                     owner.repository?.deleteCryptoCoin(id: value.1)
                     owner.output.saveButtonState.accept(false)
+                    owner.updateFavoriteCoinList?()
                 case .overLimit:
                     return
                 }

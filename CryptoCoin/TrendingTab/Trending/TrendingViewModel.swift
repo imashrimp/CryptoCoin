@@ -12,14 +12,15 @@ import RxCocoa
 final class TrendingViewModel {
     
     private let disposeBag = DisposeBag()
+    private let repository = CoinRepository()
     
     private let savedCoinArr = BehaviorSubject<[SavedCoinEntity]>(value: [])
-//    private let getTrendingData = BehaviorRelay<Void>(value: ())
     
     let output = Output()
     
     struct Input {
         let itemDidSelect: PublishRelay<(String)>
+        let updateFavoriteCoinList: PublishRelay<Void>
     }
     
     struct Output {
@@ -74,6 +75,14 @@ final class TrendingViewModel {
             .filter { !$0.isEmpty }
             .bind(with: self) { owner, coinId in
                 owner.output.pushToChart.accept(coinId)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .updateFavoriteCoinList
+            .bind(with: self) { owner, _ in
+                guard let savedCoinList = owner.repository?.readSavedCryptoCoinList() else { return }
+                owner.savedCoinArr.onNext(savedCoinList)
             }
             .disposed(by: disposeBag)
     }

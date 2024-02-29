@@ -33,7 +33,11 @@ final class TrendingViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = TrendingViewModel.Input(itemDidSelect: itemDidSelect)
+        
+        let updateFavoriteCoinList = PublishRelay<Void>()
+        
+        let input = TrendingViewModel.Input(itemDidSelect: itemDidSelect,
+                                            updateFavoriteCoinList: updateFavoriteCoinList)
         
         viewModel.transform(input: input)
         
@@ -51,7 +55,12 @@ final class TrendingViewController: BaseViewController {
             .bind(with: self) { owner, coinId in
                 let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
                 owner.navigationItem.backBarButtonItem = backButtonItem
-                owner.navigationController?.pushViewController(TrendingChartViewController(viewModel: CoinChartViewModel(coinId: coinId)),
+                
+                let viewModel = CoinChartViewModel(coinId: coinId)
+                viewModel.updateFavoriteCoinList = {
+                    updateFavoriteCoinList.accept(())
+                }
+                owner.navigationController?.pushViewController(TrendingChartViewController(viewModel: viewModel),
                                                                animated: true)
             }
             .disposed(by: disposeBag)

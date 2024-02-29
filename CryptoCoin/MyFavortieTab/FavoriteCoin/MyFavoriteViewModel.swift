@@ -12,13 +12,15 @@ import RxCocoa
 final class MyFavoriteViewModel {
     
     private let disposeBag = DisposeBag()
+    private let repository = CoinRepository()
     
     private let savedCoinArr = BehaviorRelay<[SavedCoinEntity]>(value: [])
     
     let output = Output()
     
     struct Input {
-        let coinDidSelected: ControlEvent<FavoriteCoinEntity>
+        let coinDidSelected: ControlEvent<PresentItemEntity>
+        let updateFavoriteCoinList: PublishRelay<Void>
     }
     
     struct Output {
@@ -56,6 +58,15 @@ final class MyFavoriteViewModel {
             .coinDidSelected
             .bind(with: self) { owner, value in
                 owner.output.selectedCoinId.accept(value.id)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .updateFavoriteCoinList
+            .bind(with: self) { owner, _ in
+                guard let savedCoinList = owner.repository?.readSavedCryptoCoinList() else { return }
+                let coinIDs = savedCoinList.map { $0.coinID }.joined(separator: ",")
+                coinID.accept(coinIDs)
             }
             .disposed(by: disposeBag)
     }

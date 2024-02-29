@@ -12,8 +12,6 @@ import RxCocoa
 
 final class SearchedCoinTableViewCell: BaseTableViewCell {
     
-    private let repository = CoinRepository()
-    
     let likeButtonTappedCoin = PublishRelay<SearchedCoinEntity>()
     
     private let logoImageView = {
@@ -54,7 +52,7 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
     
     let likeButton = UIButton()
     
-    func showContents(keyword: String, data: SearchedCoinEntity) {
+    func showContents(keyword: String, data: SearchedCoinEntity, savedCoinid: [String]) {
         coinNameLabel.text = data.name
         
         let coinName = coinNameLabel.text ?? ""
@@ -68,11 +66,8 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
         guard let url = URL(string: data.logo) else { return }
         logoImageView.kf.setImage(with: url,
                                   options: [.processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100)))])
-        guard let saveState = repository?.checkCoinSaveState(coinId: data.id) else { return }
-        
-        likeButtonImage.image = saveState ? UIImage(systemName: ImageAsset.starFill.name) : UIImage(systemName: ImageAsset.star.name)
-        
-        
+
+        likeButtonImage.image = savedCoinid.contains(data.id) ? UIImage(systemName: ImageAsset.starFill.name) : UIImage(systemName: ImageAsset.star.name)
     }
     
     override func prepareForReuse() {
