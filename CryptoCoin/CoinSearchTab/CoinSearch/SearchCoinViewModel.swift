@@ -22,6 +22,7 @@ final class SearchCoinViewModel {
         let likeButtonTapped: PublishRelay<SearchedCoinEntity>
         let alertActionTapped: PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>
         let cellDidSelected: ControlEvent<SearchedCoinEntity>
+        let updateFavoriteCoinList: PublishRelay<Void>
     }
     
     struct Output {
@@ -31,6 +32,7 @@ final class SearchCoinViewModel {
         let likeButtonTappedCoin = PublishSubject<Void>()
         let presentAlert = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
         let savedCoinIds = BehaviorRelay<[String]>(value: [])
+        let updateSavedCoinlist = BehaviorRelay<Void?>(value: nil)
     }
     
     struct entityModel {
@@ -109,6 +111,16 @@ final class SearchCoinViewModel {
             .cellDidSelected
             .bind(with: self) { owner, coinData in
                 owner.output.transitionToCoinChartView.onNext(coinData.id)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .updateFavoriteCoinList
+            .bind(with: self) { owner, _ in
+                guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+                let coinIds = savedCoinArr.map{ $0.coinID }
+                owner.output.savedCoinIds.accept(coinIds)
+                owner.output.updateSavedCoinlist.accept(())
             }
             .disposed(by: disposeBag)
     }

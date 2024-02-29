@@ -37,7 +37,8 @@ final class CoinSearchViewController: BaseViewController {
                                               searchButtonTapped: baseView.coinSearchBar.rx.searchButtonClicked,
                                               likeButtonTapped: likeButtonTappedCoin, 
                                               alertActionTapped: coinData,
-                                              cellDidSelected: baseView.searchCoinTableView.rx.modelSelected(SearchedCoinEntity.self))
+                                              cellDidSelected: baseView.searchCoinTableView.rx.modelSelected(SearchedCoinEntity.self), 
+                                              updateFavoriteCoinList: updateFavoriteCoinList)
         
         seachViewModel.transform(input: input)
         
@@ -99,7 +100,7 @@ final class CoinSearchViewController: BaseViewController {
             .bind(with: self) { owner, value in
                 let viewModel = CoinChartViewModel(coinId: value)
                 viewModel.updateFavoriteCoinList = {
-                    
+                    updateFavoriteCoinList.accept(())
                 }
                 
                 let vc = CoinChartViewController(viewModel: viewModel)
@@ -107,6 +108,13 @@ final class CoinSearchViewController: BaseViewController {
                 owner.navigationItem.backBarButtonItem = backButtonItem
                 owner.navigationController?.pushViewController(vc,
                                                                animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        output
+            .updateSavedCoinlist
+            .bind(with: self) { owner, _ in
+                owner.baseView.searchCoinTableView.reloadData()
             }
             .disposed(by: disposeBag)
         
