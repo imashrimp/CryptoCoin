@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import RxDataSources
 
 final class TrendingView: BaseView {
     

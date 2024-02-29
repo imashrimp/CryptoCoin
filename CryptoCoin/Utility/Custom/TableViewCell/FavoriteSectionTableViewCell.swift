@@ -11,6 +11,8 @@ import RxCocoa
 
 final class FavoriteSectionTableViewCell: BaseTableViewCell {
     
+    var coinItemDidSelect: ((String) -> Void)?
+    
     private let favoriteCollectionView = {
         let view = UICollectionView(frame: .zero,
                                     collectionViewLayout: trendFavoriteCollectionViewFlowLayout())
@@ -29,6 +31,14 @@ final class FavoriteSectionTableViewCell: BaseTableViewCell {
                 cell.showContents(data: element)
             }
                        .disposed(by: disposeBag)
+        
+        favoriteCollectionView
+            .rx
+            .modelSelected(PresentItemEntity.self)
+            .bind(with: self) { owner, value in
+                owner.coinItemDidSelect?(value.id)
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configure() {

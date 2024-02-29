@@ -11,6 +11,8 @@ import RxCocoa
 
 final class TrendingTableViewCell: BaseTableViewCell {
     
+    var itemDidSelect: ((String) -> Void)?
+    
     private let trendingCollectionView = {
         let view = UICollectionView(frame: .zero,
                                     collectionViewLayout: trendCollectionViewFlowLayout())
@@ -29,6 +31,16 @@ final class TrendingTableViewCell: BaseTableViewCell {
                 cell.showContents(index: item, data: element)
             }
                        .disposed(by: disposeBag)
+        
+        
+        trendingCollectionView
+            .rx
+            .modelSelected(PresentItemEntity.self)
+            .bind(with: self) { owner, value in
+                owner.itemDidSelect?(value.id)
+            }
+            .disposed(by: disposeBag)
+        
     }
     
     override func configure() {

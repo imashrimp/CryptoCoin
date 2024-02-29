@@ -9,8 +9,10 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-final class TrendingCoinViewController: BaseViewController {
-
+final class TrendingViewController: BaseViewController {
+    
+    private let itemDidSelect = PublishRelay<String>()
+    
     private let baseView = TrendingView()
     private let viewModel: TrendingViewModel
     
@@ -31,7 +33,7 @@ final class TrendingCoinViewController: BaseViewController {
     }
     
     private func bind() {
-        let input = TrendingViewModel.Input()
+        let input = TrendingViewModel.Input(itemDidSelect: itemDidSelect)
         
         viewModel.transform(input: input)
         
@@ -44,11 +46,18 @@ final class TrendingCoinViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
+        output
+            .pushToChart
+            .bind(with: self) { owner, coinId in
+                owner.navigationController?.pushViewController(TrendingChartViewController(viewModel: CoinChartViewModel(coinId: coinId)),
+                                                               animated: true)
+            }
+            .disposed(by: disposeBag)
     }
-
+    
 }
 
-extension TrendingCoinViewController: UITableViewDelegate, UITableViewDataSource {
+extension TrendingViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.output.presentData.value.count
@@ -63,29 +72,40 @@ extension TrendingCoinViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
         if viewModel.output.presentData.value.count == 3 {
             if indexPath.section == 0 {
-                guard 
+                guard
                     let cell = tableView.dequeueReusableCell(withIdentifier: FavoriteSectionTableViewCell.id) as? FavoriteSectionTableViewCell else {
                     return UITableViewCell()
                 }
                 cell.showContents(data: viewModel.output.presentData.value[indexPath.row].data)
+                
+                cell.coinItemDidSelect = { [weak self] value in
+                    self?.itemDidSelect.accept(value)
+                }
+                
                 return cell
             } else {
                 guard
-                    let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else { 
+                    let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
                     return UITableViewCell()
                 }
                 cell.showContens(data: viewModel.output.presentData.value[indexPath.section].data)
+                cell.itemDidSelect = { [weak self] value in
+                    self?.itemDidSelect.accept(value)
+                }
                 return cell
             }
         } else if viewModel.output.presentData.value.count == 2 {
-            guard 
+            guard
                 let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
                 return UITableViewCell()
             }
             cell.showContens(data: viewModel.output.presentData.value[indexPath.section].data)
+            cell.itemDidSelect = { [weak self] value in
+                self?.itemDidSelect.accept(value)
+            }
             return cell
         } else {
             return UITableViewCell()

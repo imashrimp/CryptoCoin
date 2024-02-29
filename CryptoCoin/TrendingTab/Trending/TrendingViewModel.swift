@@ -8,28 +8,28 @@
 import Foundation
 import RxSwift
 import RxCocoa
-import RxDataSources
 
 final class TrendingViewModel {
     
     private let disposeBag = DisposeBag()
     
-    private let savedCoinArr = BehaviorRelay<[SavedCoinEntity]>(value: [])
+    private let savedCoinArr = BehaviorSubject<[SavedCoinEntity]>(value: [])
 //    private let getTrendingData = BehaviorRelay<Void>(value: ())
     
     let output = Output()
     
     struct Input {
-        
+        let itemDidSelect: PublishRelay<(String)>
     }
     
     struct Output {
         let favoriteAndTrendItems = PublishRelay<[[PresentItemEntity]]>()
         let presentData = BehaviorRelay<[TrendEntity]>(value: [])
+        let pushToChart = PublishRelay<String>()
     }
     
     init(coinArr: [SavedCoinEntity]) {
-        self.savedCoinArr.accept(coinArr)
+        self.savedCoinArr.onNext(coinArr)
     }
     
     func transform(input: Input) {
@@ -46,6 +46,7 @@ final class TrendingViewModel {
                     data: savedCoins)]
                 
                 let trendResult = NetworkManager.getTrendingCoinList()
+                
                 trendResult
                     .bind(with: self) { owner, value in
                         result.append(contentsOf: value)
@@ -65,6 +66,14 @@ final class TrendingViewModel {
                         owner.output.presentData.accept(value)
                     }
                     .disposed(by: owner.disposeBag)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .itemDidSelect
+            .filter { !$0.isEmpty }
+            .bind(with: self) { owner, coinId in
+                owner.output.pushToChart.accept(coinId)
             }
             .disposed(by: disposeBag)
     }

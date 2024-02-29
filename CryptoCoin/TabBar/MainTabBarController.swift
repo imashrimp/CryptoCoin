@@ -21,7 +21,7 @@ final class MainTabBarController: UITabBarController, UITabBarControllerDelegate
         self.tabBar.barTintColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
         self.delegate = self
         
-        let trendingVC = UINavigationController(rootViewController: TrendingCoinViewController(viewModel: TrendingViewModel(coinArr: viewModel.output.savedCoinArr.value)))
+        let trendingVC = UINavigationController(rootViewController: TrendingViewController(viewModel: TrendingViewModel(coinArr: viewModel.output.savedCoinArr.value)))
         let coinSearchVC = UINavigationController(rootViewController: CoinSearchViewController(viewModel: SearchCoinViewModel()))
         let myFavoriteVC = UINavigationController(rootViewController: MyFavoriteViewController(favoriteCoinViewModel: MyFavoriteViewModel(coinArr: viewModel.output.savedCoinArr.value)))
         let myProfileVC = UINavigationController(rootViewController: MyProfileViewController())

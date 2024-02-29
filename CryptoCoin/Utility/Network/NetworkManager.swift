@@ -11,14 +11,14 @@ import RxSwift
 struct NetworkManager {
     
     static func getTrendingCoinList() -> Observable<[TrendEntity]> {
-        
+        print("@@%%", #function)
         return Observable<[TrendEntity]>.create { trendData in
             API.session.request(CryptoCoinListTarget.trending)
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: TrendingCoinResponseModel.self) { response in
+                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
-
                         let trendCoinArr = value.coins.map {
                             PresentItemEntity(
                                 id: $0.item.id,
@@ -63,11 +63,12 @@ struct NetworkManager {
     }
     
     static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<[SearchedCoinEntity]> {
-        
+        print("@@%%", #function)
         return Observable<[SearchedCoinEntity]>.create { coinList in
             API.session.request(CryptoCoinListTarget.search(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: CoinSearchResponseModel.self) { response in
+                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         let result = value.coins
@@ -87,11 +88,12 @@ struct NetworkManager {
     }
     
     static func getCoinChartInfo(query: CoinChartRequestModel) -> Observable<CoinChartEntity> {
-        
+        print("@@%%", #function)
         return Observable<CoinChartEntity>.create { coinChartInfo in
             API.session.request(CryptoCoinListTarget.coinChart(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [CoinChartResponseModel].self) { response in
+                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         print(value)
@@ -123,11 +125,13 @@ struct NetworkManager {
     }
     
     static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<[PresentItemEntity]> {
-        
+
+        print("@@%%", #function)
         return Observable<[PresentItemEntity]>.create { favoriteCoinArr in
             API.session.request(CryptoCoinListTarget.favoriteCoins(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
+                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         let result = value.map {
