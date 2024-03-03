@@ -30,6 +30,11 @@ final class MyFavoriteViewModel {
     
     init(coinArr: [SavedCoinEntity]) {
         self.savedCoinArr.accept(coinArr)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {
@@ -69,5 +74,10 @@ final class MyFavoriteViewModel {
                 coinID.accept(coinIDs)
             }
             .disposed(by: disposeBag)
+    }
+    
+    @objc private func updateCoinListNoti() {
+        guard let newCoinArr = repository?.readSavedCryptoCoinList() else { return }
+        savedCoinArr.accept(newCoinArr)
     }
 }

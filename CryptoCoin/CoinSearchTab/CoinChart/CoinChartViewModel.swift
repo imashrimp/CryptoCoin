@@ -16,7 +16,7 @@ final class CoinChartViewModel {
     private let repository = CoinRepository()
     private var disposeBag = DisposeBag()
     
-    private let coinId = BehaviorSubject<String?>(value: nil)
+    private let coinId = BehaviorRelay<String?>(value: nil)
     
     let output = Output()
     
@@ -33,7 +33,7 @@ final class CoinChartViewModel {
     }
     
     init(coinId: String) {
-        self.coinId.onNext(coinId)
+        self.coinId.accept(coinId)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateCoinListNoti),
                                                name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
@@ -107,7 +107,11 @@ final class CoinChartViewModel {
             .disposed(by: disposeBag)
     }
     
-    @objc private func updateCoinListNoti() {
-        
+    @objc private func updateCoinListNoti(_ notification: Notification) {
+        guard let updatedCoinId = notification.userInfo?["coinId"] as? String,
+        let coinIdOnScreen = coinId.value else { return }
+        if updatedCoinId == coinIdOnScreen {
+            coinId.accept(updatedCoinId)
+        }
     }
 }

@@ -98,13 +98,20 @@ final class SearchCoinViewModel {
                 case .saveAlert:
                     owner.coinSearchRepository?.saveCryptoCoin(id: value.1.id)
                     owner.output.likeButtonTappedCoin.onNext(())
-                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
-                                                    object: nil)
+                    guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+                    let coinIds = savedCoinArr.map{ $0.coinID }
+                    owner.output.savedCoinIds.accept(coinIds)
+//                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+//                                                    object: nil)
                 case .deleteAlert:
                     owner.coinSearchRepository?.deleteCryptoCoin(id: value.1.id)
                     owner.output.likeButtonTappedCoin.onNext(())
+                    guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+                    let coinIds = savedCoinArr.map{ $0.coinID }
+                    owner.output.savedCoinIds.accept(coinIds)
                     NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
-                                                    object: nil)
+                                                    object: self,
+                                                    userInfo: ["coinId": value.1.id])
                 case .overLimit:
                     return
                 }
