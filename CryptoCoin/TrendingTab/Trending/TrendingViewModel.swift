@@ -31,6 +31,11 @@ final class TrendingViewModel {
     
     init(coinArr: [SavedCoinEntity]) {
         self.savedCoinArr.onNext(coinArr)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {
@@ -85,5 +90,11 @@ final class TrendingViewModel {
                 owner.savedCoinArr.onNext(savedCoinList)
             }
             .disposed(by: disposeBag)
+    }
+    
+    @objc private func updateCoinListNoti() {
+        guard let newCoinArr = repository?.readSavedCryptoCoinList() else { return }
+        
+        savedCoinArr.onNext(newCoinArr)
     }
 }

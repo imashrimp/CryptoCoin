@@ -34,6 +34,10 @@ final class CoinChartViewModel {
     
     init(coinId: String) {
         self.coinId.onNext(coinId)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {
@@ -101,5 +105,9 @@ final class CoinChartViewModel {
                 }
             }
             .disposed(by: disposeBag)
+    }
+    
+    @objc private func updateCoinListNoti() {
+        
     }
 }

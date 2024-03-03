@@ -98,9 +98,13 @@ final class SearchCoinViewModel {
                 case .saveAlert:
                     owner.coinSearchRepository?.saveCryptoCoin(id: value.1.id)
                     owner.output.likeButtonTappedCoin.onNext(())
+                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                                    object: nil)
                 case .deleteAlert:
                     owner.coinSearchRepository?.deleteCryptoCoin(id: value.1.id)
                     owner.output.likeButtonTappedCoin.onNext(())
+                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                                    object: nil)
                 case .overLimit:
                     return
                 }
