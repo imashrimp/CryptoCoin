@@ -36,6 +36,11 @@ final class TrendingViewModel {
                                                selector: #selector(updateCoinListNoti),
                                                name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.favoriteChartViewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {

@@ -9,4 +9,6 @@ import Foundation
 
 enum NotificationName: String {
     case searchViewNoti = "searchViewNoti"
+    case chartviewNoti = "chartviewNoti"
+    case favoriteChartViewNoti = "favoriteChartViewNoti"
 }

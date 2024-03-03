@@ -38,6 +38,16 @@ final class CoinChartViewModel {
                                                selector: #selector(updateCoinListNoti),
                                                name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.chartviewNoti.rawValue),
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.favoriteChartViewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {
@@ -96,10 +106,16 @@ final class CoinChartViewModel {
                     owner.repository?.saveCryptoCoin(id: value.1)
                     owner.output.saveButtonState.accept(true)
                     owner.updateFavoriteCoinList?()
+                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.chartviewNoti.rawValue),
+                                                    object: self,
+                                                    userInfo: ["coinId": value.1])
                 case .deleteAlert:
                     owner.repository?.deleteCryptoCoin(id: value.1)
                     owner.output.saveButtonState.accept(false)
                     owner.updateFavoriteCoinList?()
+                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.chartviewNoti.rawValue),
+                                                    object: self,
+                                                    userInfo: ["coinId": value.1])
                 case .overLimit:
                     return
                 }

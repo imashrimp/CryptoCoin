@@ -117,7 +117,5 @@ final class CoinSearchViewController: BaseViewController {
                 owner.baseView.searchCoinTableView.reloadData()
             }
             .disposed(by: disposeBag)
-        
-        
     }
 }

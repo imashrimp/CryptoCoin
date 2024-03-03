@@ -35,6 +35,11 @@ final class MyFavoriteViewModel {
                                                selector: #selector(updateCoinListNoti),
                                                name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.chartviewNoti.rawValue),
+                                               object: nil)
     }
     
     func transform(input: Input) {

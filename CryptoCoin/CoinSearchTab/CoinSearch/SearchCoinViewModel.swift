@@ -14,6 +14,8 @@ final class SearchCoinViewModel {
     private let coinSearchRepository = CoinRepository()
     private let disposeBag = DisposeBag()
     
+    private let networkResult = BehaviorRelay<[SearchedCoinEntity]>(value: [])
+    
     let output = Output()
     
     struct Input {
@@ -40,10 +42,23 @@ final class SearchCoinViewModel {
         let stringtext: String
     }
     
+    init() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.chartviewNoti.rawValue),
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateCoinListNoti),
+                                               name: NSNotification.Name(NotificationName.favoriteChartViewNoti.rawValue),
+                                               object: nil)
+    }
+    
     func transform(input: Input) {
         
         let searchKeyword = BehaviorRelay(value: "")
-        let networkResult = PublishRelay<[SearchedCoinEntity]>()
+        
+        
         input.searchButtonTapped
             .withLatestFrom(input.searchWord)
             .distinctUntilChanged()
@@ -58,7 +73,7 @@ final class SearchCoinViewModel {
                 let coinIds = savedCoinList.map { $0.coinID }
                 
                 owner.output.savedCoinIds.accept(coinIds)
-                networkResult.accept(value)
+                owner.networkResult.accept(value)
             }
             .disposed(by: disposeBag)
         
@@ -101,8 +116,9 @@ final class SearchCoinViewModel {
                     guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
                     let coinIds = savedCoinArr.map{ $0.coinID }
                     owner.output.savedCoinIds.accept(coinIds)
-//                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
-//                                                    object: nil)
+                    NotificationCenter.default.post(name: NSNotification.Name(NotificationName.searchViewNoti.rawValue),
+                                                    object: self,
+                                                    userInfo: ["coinId": value.1.id])
                 case .deleteAlert:
                     owner.coinSearchRepository?.deleteCryptoCoin(id: value.1.id)
                     owner.output.likeButtonTappedCoin.onNext(())
@@ -136,4 +152,13 @@ final class SearchCoinViewModel {
             .disposed(by: disposeBag)
     }
     
+    
+    @objc private func updateCoinListNoti(_ notification: Notification) {
+        
+        guard let savedCoinList = coinSearchRepository?.readSavedCryptoCoinList() else { return }
+        let coinIds = savedCoinList.map { $0.coinID }
+        output.savedCoinIds.accept(coinIds)
+        output.searchedCoinList.onNext(networkResult.value)
+        
+    }
 }
