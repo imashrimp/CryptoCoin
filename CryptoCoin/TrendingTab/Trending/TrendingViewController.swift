@@ -64,6 +64,14 @@ final class TrendingViewController: BaseViewController {
                                                                animated: true)
             }
             .disposed(by: disposeBag)
+        
+        output
+            .networkError
+            .bind(with: self) { owner, value in
+                owner.alert(title: value,
+                            rightButtonTitle: "확인")
+            }
+            .disposed(by: disposeBag)
     }
     
 }

@@ -14,7 +14,8 @@ final class SearchCoinViewModel {
     private let coinSearchRepository = CoinRepository()
     private let disposeBag = DisposeBag()
     
-    private let networkResult = BehaviorRelay<[SearchedCoinEntity]>(value: [])
+    //    private let networkResult = BehaviorRelay<[SearchedCoinEntity]>(value: [])
+    private let networkResult = BehaviorSubject<[SearchedCoinEntity]>(value: [])
     
     let output = Output()
     
@@ -28,13 +29,14 @@ final class SearchCoinViewModel {
     }
     
     struct Output {
-        let searchedCoinList = BehaviorSubject<[SearchedCoinEntity]>(value: [])
+        let searchedCoinList = BehaviorRelay<[SearchedCoinEntity]>(value: [])
         let searchKeyword = BehaviorRelay<String>(value: "")
         let transitionToCoinChartView = PublishSubject<String>()
         let likeButtonTappedCoin = PublishSubject<Void>()
         let presentAlert = PublishRelay<(AlertPresentEnum, SearchedCoinEntity)>()
         let savedCoinIds = BehaviorRelay<[String]>(value: [])
         let updateSavedCoinlist = BehaviorRelay<Void?>(value: nil)
+        let networkError = PublishSubject<String>()
     }
     
     struct entityModel {
@@ -67,16 +69,26 @@ final class SearchCoinViewModel {
                 return CoinSearchRequestModel(query: $0)
             }
             .flatMap { NetworkManager.getSearchedCoinList(query: $0) }
+        //            .bind(with: self) { owner, value in
+        
+        //                guard let savedCoinList = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+        //                let coinIds = savedCoinList.map { $0.coinID }
+        //                owner.output.savedCoinIds.accept(coinIds)
+        //                owner.networkResult.onNext(value)
+        //            }
             .bind(with: self) { owner, value in
-                
-                guard let savedCoinList = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
-                let coinIds = savedCoinList.map { $0.coinID }
-                
-                owner.output.savedCoinIds.accept(coinIds)
-                owner.networkResult.accept(value)
+                switch value {
+                case .success(let data):
+                    guard let savedCoinList = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
+                    let coinIds = savedCoinList.map { $0.coinID }
+                    owner.output.savedCoinIds.accept(coinIds)
+                    owner.output.searchedCoinList.accept(data)
+//                    owner.networkResult.onNext(data)
+                case .failure(let error):
+                    owner.output.networkError.onNext(error.description)
+                }
             }
             .disposed(by: disposeBag)
-        
         
         searchKeyword.bind(with: self) { owner, value in
             owner.output.searchKeyword.accept(value)
@@ -84,7 +96,7 @@ final class SearchCoinViewModel {
         .disposed(by: disposeBag)
         
         networkResult.bind(with: self) { owner, value in
-            owner.output.searchedCoinList.onNext(value)
+            owner.output.searchedCoinList.accept(value)
         }
         .disposed(by: disposeBag)
         
@@ -146,7 +158,7 @@ final class SearchCoinViewModel {
             .bind(with: self) { owner, _ in
                 guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
                 let coinIds = savedCoinArr.map{ $0.coinID }
-                owner.output.savedCoinIds.accept(coinIds)
+                //                owner.output.savedCoinIds.accept(coinIds)
                 owner.output.updateSavedCoinlist.accept(())
             }
             .disposed(by: disposeBag)
@@ -157,8 +169,8 @@ final class SearchCoinViewModel {
         
         guard let savedCoinList = coinSearchRepository?.readSavedCryptoCoinList() else { return }
         let coinIds = savedCoinList.map { $0.coinID }
-        output.savedCoinIds.accept(coinIds)
-        output.searchedCoinList.onNext(networkResult.value)
+        //        output.savedCoinIds.accept(coinIds)
+        //        output.searchedCoinList.onNext(networkResult.value)
         
     }
 }

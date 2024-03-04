@@ -10,9 +10,9 @@ import RxSwift
 
 struct NetworkManager {
     
-    static func getTrendingCoinList() -> Observable<[TrendEntity]> {
+    static func getTrendingCoinList() -> Observable<Result<[TrendEntity], NetworkError>> {
         print("@@%%", #function)
-        return Observable<[TrendEntity]>.create { trendData in
+        return Observable<Result<[TrendEntity], NetworkError>>.create { trendData in
             API.session.request(CryptoCoinListTarget.trending)
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: TrendingCoinResponseModel.self) { response in
@@ -52,19 +52,33 @@ struct NetworkManager {
                         )
                         
                         let result: [TrendEntity] = [trendCoinPresentData, trendNFTPresentData]
-
-                        trendData.onNext(result)
+                        trendData.onNext(.success(result))
                     case .failure(let error):
-                        trendData.onError(error)
+                        let errorCode = error.responseCode ?? 0
+                        
+                        switch errorCode {
+                        case 400:
+                            trendData.onNext(.failure(NetworkError.badRequest))
+                        case 401:
+                            trendData.onNext(.failure(NetworkError.Unauthorised))
+                        case 403:
+                            trendData.onNext(.failure(NetworkError.forbidden))
+                        case 429:
+                            trendData.onNext(.failure(NetworkError.tooManyRequests))
+                        default:
+                            trendData.onNext(.failure(NetworkError.badRequest))
+                        }
                     }
                 }
             return Disposables.create()
         }
     }
     
-    static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<[SearchedCoinEntity]> {
+    //    static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<[SearchedCoinEntity]> {
+    static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<Result<[SearchedCoinEntity], NetworkError>> {
         print("@@%%", #function)
-        return Observable<[SearchedCoinEntity]>.create { coinList in
+        //        return Observable<[SearchedCoinEntity]>.create { coinList in
+        return Observable<Result<[SearchedCoinEntity], NetworkError>>.create { coinList in
             API.session.request(CryptoCoinListTarget.search(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: CoinSearchResponseModel.self) { response in
@@ -76,10 +90,22 @@ struct NetworkManager {
                                                       name: $0.name,
                                                       currencyUnit: $0.symbol,
                                                       logo: $0.large) }
-                        coinList.onNext(result)
+                        coinList.onNext(.success(result))
                     case .failure(let error):
-                        //TODO: 에러핸들링 수정 필요
-                        coinList.onError(error)
+                        let errorCode = error.responseCode ?? 0
+                        
+                        switch errorCode {
+                        case 400:
+                            coinList.onNext(.failure(NetworkError.badRequest))
+                        case 401:
+                            coinList.onNext(.failure(NetworkError.Unauthorised))
+                        case 403:
+                            coinList.onNext(.failure(NetworkError.forbidden))
+                        case 429:
+                            coinList.onNext(.failure(NetworkError.tooManyRequests))
+                        default:
+                            coinList.onNext(.failure(NetworkError.badRequest))
+                        }
                     }
                 }
             
@@ -117,17 +143,18 @@ struct NetworkManager {
                             coinChartInfo.onNext(result)
                         }
                     case .failure(let error):
-                        coinChartInfo.onError(error)
+                        print(error)
+                        //                        coinChartInfo.onError(error)
                     }
                 }
             return Disposables.create()
         }
     }
     
-    static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<[PresentItemEntity]> {
-
+    static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<Result<[PresentItemEntity], NetworkError>> {
+        
         print("@@%%", #function)
-        return Observable<[PresentItemEntity]>.create { favoriteCoinArr in
+        return Observable<Result<[PresentItemEntity], NetworkError>>.create { favoriteCoinArr in
             API.session.request(CryptoCoinListTarget.favoriteCoins(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
@@ -144,10 +171,24 @@ struct NetworkManager {
                                 priceChangePercent24H: $0.priceChangePercentage24H.convertToPercentage()
                             )
                         }
-                        favoriteCoinArr.onNext(result)
+                        //                        favoriteCoinArr.onNext(result)
+                        favoriteCoinArr.onNext(.success(result))
                         
                     case .failure(let error):
-                        favoriteCoinArr.onError(error)
+                        let errorCode = error.responseCode ?? 0
+                        
+                        switch errorCode {
+                        case 400:
+                            favoriteCoinArr.onNext(.failure(NetworkError.badRequest))
+                        case 401:
+                            favoriteCoinArr.onNext(.failure(NetworkError.Unauthorised))
+                        case 403:
+                            favoriteCoinArr.onNext(.failure(NetworkError.forbidden))
+                        case 429:
+                            favoriteCoinArr.onNext(.failure(NetworkError.tooManyRequests))
+                        default:
+                            favoriteCoinArr.onNext(.failure(NetworkError.badRequest))
+                        }
                     }
                 }
             return Disposables.create()
@@ -155,3 +196,4 @@ struct NetworkManager {
     }
 }
 
+//MARK: 이스케이핑 클로저 사용한 통신

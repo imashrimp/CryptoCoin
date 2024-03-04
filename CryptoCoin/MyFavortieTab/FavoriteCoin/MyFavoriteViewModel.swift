@@ -26,6 +26,7 @@ final class MyFavoriteViewModel {
     struct Output {
         let favoriteCoinArr = PublishRelay<[PresentItemEntity]>()
         let selectedCoinId = PublishRelay<String>()
+        let networkError = PublishSubject<String>()
     }
     
     init(coinArr: [SavedCoinEntity]) {
@@ -60,7 +61,12 @@ final class MyFavoriteViewModel {
             .map { return FavoriteCoinsRequestModel(vs_currency: "krw", ids: $0) }
             .flatMap { NetworkManager.getFavoriteCoinArr(query: $0) }
             .bind(with: self) { owner, value in
-                owner.output.favoriteCoinArr.accept(value)
+                switch value {
+                case .success(let data):
+                    owner.output.favoriteCoinArr.accept(data)
+                case .failure(let error):
+                    owner.output.networkError.onNext(error.description)
+                }
             }
             .disposed(by: disposeBag)
         

@@ -29,6 +29,10 @@ struct CoinChartResponseModel: Decodable {
         case lastUpdated = "last_updated"
         case sparklineIn7D = "sparkline_in_7d"
     }
+    
+//    func toDomain() -> CoinChartEntity {
+//        
+//    }
 }
 
 struct SparklineIn7D: Decodable {
