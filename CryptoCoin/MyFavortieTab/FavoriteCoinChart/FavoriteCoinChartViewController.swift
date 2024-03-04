@@ -118,6 +118,15 @@ final class FavoriteCoinChartViewController: BaseViewController {
                 }
             }
             .disposed(by: disposeBag)
+        
+        output
+            .networkError
+            .bind(with: self) { owner, value in
+                owner.alert(title: value,
+                            rightButtonTitle: "확인",
+                            rightButtonStyle: .default)
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configure() {

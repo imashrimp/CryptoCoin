@@ -30,6 +30,7 @@ final class CoinChartViewModel {
         let saveButtonState = PublishRelay<Bool>()
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
         let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
+        let networkError = PublishSubject<String>()
     }
     
     init(coinId: String) {
@@ -60,19 +61,21 @@ final class CoinChartViewModel {
             .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0, sparkline: "true" ) }
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
             .bind(with: self) { owner, value in
-                
-                guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: value.id) else { return }
-                
-                owner.output.saveButtonState.accept(coinSaved)
-                
-                owner.output.coinChartData.onNext(value)
-                
-                let plusOrMinus = value.priceChangePercentage24H.prefix(1)
-                
-                if plusOrMinus == "-" {
-                    owner.output.priceChangePercentLabelTextColor.onNext(false)
-                } else {
-                    owner.output.priceChangePercentLabelTextColor.onNext(true)
+                switch value {
+                case .success(let data):
+                    guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: data.id) else { return }
+                    owner.output.saveButtonState.accept(coinSaved)
+                    owner.output.coinChartData.onNext(data)
+                    
+                    let plusOrMinus = data.priceChangePercentage24H.prefix(1)
+                    
+                    if plusOrMinus == "-" {
+                        owner.output.priceChangePercentLabelTextColor.onNext(false)
+                    } else {
+                        owner.output.priceChangePercentLabelTextColor.onNext(true)
+                    }
+                case .failure(let error):
+                    owner.output.networkError.onNext(error.description)
                 }
                 
             }

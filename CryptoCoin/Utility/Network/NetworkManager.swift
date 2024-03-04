@@ -74,7 +74,6 @@ struct NetworkManager {
         }
     }
     
-    //    static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<[SearchedCoinEntity]> {
     static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<Result<[SearchedCoinEntity], NetworkError>> {
         print("@@%%", #function)
         //        return Observable<[SearchedCoinEntity]>.create { coinList in
@@ -113,9 +112,9 @@ struct NetworkManager {
         }
     }
     
-    static func getCoinChartInfo(query: CoinChartRequestModel) -> Observable<CoinChartEntity> {
+    static func getCoinChartInfo(query: CoinChartRequestModel) -> Observable<Result<CoinChartEntity, NetworkError>> {
         print("@@%%", #function)
-        return Observable<CoinChartEntity>.create { coinChartInfo in
+        return Observable<Result<CoinChartEntity, NetworkError>>.create { coinChartInfo in
             API.session.request(CryptoCoinListTarget.coinChart(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [CoinChartResponseModel].self) { response in
@@ -140,11 +139,23 @@ struct NetworkManager {
                                 lastUpdated: updateDate.toString(format: "M/dd HH:mm:ss") + " 업데이트",
                                 oneWeekPriceRecord: coinData.sparklineIn7D.price
                             )
-                            coinChartInfo.onNext(result)
+                            coinChartInfo.onNext(.success(result))
                         }
                     case .failure(let error):
-                        print(error)
-                        //                        coinChartInfo.onError(error)
+                        let errorCode = error.responseCode ?? 0
+                        
+                        switch errorCode {
+                        case 400:
+                            coinChartInfo.onNext(.failure(NetworkError.badRequest))
+                        case 401:
+                            coinChartInfo.onNext(.failure(NetworkError.Unauthorised))
+                        case 403:
+                            coinChartInfo.onNext(.failure(NetworkError.forbidden))
+                        case 429:
+                            coinChartInfo.onNext(.failure(NetworkError.tooManyRequests))
+                        default:
+                            coinChartInfo.onNext(.failure(NetworkError.badRequest))
+                        }
                     }
                 }
             return Disposables.create()

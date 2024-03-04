@@ -31,6 +31,7 @@ final class FavoriteCoinChartViewModel {
         let saveButtonState = PublishRelay<Bool>()
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
         let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
+        let networkError = PublishSubject<String>()
     }
     
     init(coinID: String) {
@@ -57,17 +58,34 @@ final class FavoriteCoinChartViewModel {
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
             .bind(with: self) { owner, value in
                 
-                guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: value.id) else { return }
+//                guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: value.id) else { return }
+//                
+//                owner.output.saveButtonState.accept(coinSaved)
+//                owner.output.coinChartData.onNext(value)
+//                
+//                let plusOrMinus = value.priceChangePercentage24H.prefix(1)
+//                
+//                if plusOrMinus == "-" {
+//                    owner.output.priceChangePercentLabelTextColor.onNext(false)
+//                } else {
+//                    owner.output.priceChangePercentLabelTextColor.onNext(true)
+//                }
                 
-                owner.output.saveButtonState.accept(coinSaved)
-                owner.output.coinChartData.onNext(value)
-                
-                let plusOrMinus = value.priceChangePercentage24H.prefix(1)
-                
-                if plusOrMinus == "-" {
-                    owner.output.priceChangePercentLabelTextColor.onNext(false)
-                } else {
-                    owner.output.priceChangePercentLabelTextColor.onNext(true)
+                switch value {
+                case .success(let data):
+                    guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: data.id) else { return }
+                    owner.output.saveButtonState.accept(coinSaved)
+                    owner.output.coinChartData.onNext(data)
+                    
+                    let plusOrMinus = data.priceChangePercentage24H.prefix(1)
+                    
+                    if plusOrMinus == "-" {
+                        owner.output.priceChangePercentLabelTextColor.onNext(false)
+                    } else {
+                        owner.output.priceChangePercentLabelTextColor.onNext(true)
+                    }
+                case .failure(let error):
+                    owner.output.networkError.onNext(error.description)
                 }
             }
             .disposed(by: disposeBag)
