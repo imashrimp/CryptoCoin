@@ -44,6 +44,7 @@ final class TrendingFavoriteCollectionViewCell: BaseCollectionViewCell {
         let view = PaddingLabel(padding: UIEdgeInsets(top: 2, left: 6, bottom: 2, right: 6))
         view.clipsToBounds = true
         view.layer.cornerRadius = 4
+        view.font = .systemFont(ofSize: 17, weight: .bold)
         return view
     }()
     
@@ -52,12 +53,20 @@ final class TrendingFavoriteCollectionViewCell: BaseCollectionViewCell {
         coinNameAndCurrencyStackView.currencyUnitLabel.text = data.currency
         
         priceLabel.text = data.price
-        priceChangePercentLabel.text = data.priceChangePercent24H
+        
+        let plusOrMinus = data.priceChangePercent24H.prefix(1)
+        
+        if plusOrMinus == "-" {
+            priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
+            priceChangePercentLabel.text = data.priceChangePercent24H
+        } else {
+            priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
+            priceChangePercentLabel.text = "+" + data.priceChangePercent24H
+        }
         
         guard let imageURL = URL(string: data.thumbnail) else { return }
         logoImageView.kf.setImage(with: imageURL,
-                                  options: [.processor(DownsamplingImageProcessor(size: CGSize(width: 100, height: 100))),
-                                            .cacheOriginalImage])
+                                  options: [.cacheOriginalImage])
     }
     
     override func prepareForReuse() {

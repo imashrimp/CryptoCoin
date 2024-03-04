@@ -14,11 +14,6 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
     
     var disposeBag = DisposeBag()
     
-//    private let trendingTableView = {
-//        let view = UITableView()
-//        return view
-//    }()
-    
     private let rankLabel = {
         let view = UILabel()
         view.font = .systemFont(ofSize: 24,
@@ -53,7 +48,16 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
         coinInfoComponent.coinNameLabel.text = data.name
         coinInfoComponent.currencyUnitLabel.text = data.currency
         coinPriceComponent.priceLabel.text = data.price
-        coinPriceComponent.priceChangePercentLabel.text = data.priceChangePercent24H
+        
+        let plusOrMinus = data.priceChangePercent24H.prefix(1)
+        
+        if plusOrMinus == "-" {
+            coinPriceComponent.priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
+            coinPriceComponent.priceChangePercentLabel.text = data.priceChangePercent24H
+        } else {
+            coinPriceComponent.priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
+            coinPriceComponent.priceChangePercentLabel.text = "+" + data.priceChangePercent24H
+        }
         
         guard let url = URL(string: data.thumbnail) else { return }
         logoImageView.kf.setImage(with: url)
@@ -61,24 +65,14 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
     
     
     override func configure() {
-        
-//        [
-//        trendingTableView
-//        ].forEach { contentView.addSubview($0) }
-        [
-        rankLabel,
+        [rankLabel,
         logoImageView,
         coinInfoComponent,
-        coinPriceComponent
-        ].forEach { contentView.addSubview($0) }
+        coinPriceComponent].forEach { contentView.addSubview($0) }
     }
     
     override func setConstraints() {
-        
-//        trendingTableView.snp.makeConstraints {
-//            $0.verticalEdges.equalToSuperview().inset(8)
-//            $0.horizontalEdges.equalToSuperview().inset(12)
-//        }
+
         rankLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(12)
             $0.centerY.equalTo(coinInfoComponent)
@@ -97,7 +91,6 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
         }
         
         coinPriceComponent.snp.makeConstraints {
-//            $0.verticalEdges.equalToSuperview().inset(12)
             $0.centerY.equalTo(coinInfoComponent)
             $0.trailing.equalToSuperview().inset(16)
         }

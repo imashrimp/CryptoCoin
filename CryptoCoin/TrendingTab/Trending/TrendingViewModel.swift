@@ -49,36 +49,13 @@ final class TrendingViewModel {
         /// 기본적 구조는 주입 받은 coinID 배열을 통해 통신 분기처리를 할 것이며
         /// 이 데이터와 무관하게 Trend 데이터는 받야야함
         /// 그렇다면 주입받은 coinID 수와 무관하게 이를 호출해서 combineLastest 등으로 테이블 뷰 다시 그리게
-        
-        
-        
-        
+
         savedCoinArr
             .filter { $0.count >= 2 }
             .map { $0.map { $0.coinID}.joined(separator: ",") }
             .map { FavoriteCoinsRequestModel(vs_currency: "krw", ids: $0) }
             .flatMap { NetworkManager.getFavoriteCoinArr(query: $0) }
             .bind(with: self) { owner, savedCoins in
-                
-                //                var result = [
-                //                    TrendEntity(sectionTitle: "My Favorite",
-                //                                data: savedCoins)
-                //                ]
-                
-                //                let trendResult = NetworkManager.getTrendingCoinList()
-                //                trendResult
-                //                    .bind(with: self) { owner, value in
-                //                        switch value {
-                //                        case .success(let data):
-                //                            result.append(contentsOf: data)
-                //                            owner.output.presentData.accept(result)
-                //                        case .failure(let error):
-                //                            owner.output.networkError.onNext(error.description)
-                //                        }
-                //                    }
-                //                    .disposed(by: owner.disposeBag)
-                
-                
                 switch savedCoins {
                 case .success(let data):
                     var result = [
