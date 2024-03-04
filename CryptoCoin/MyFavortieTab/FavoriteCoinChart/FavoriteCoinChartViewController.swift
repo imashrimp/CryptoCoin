@@ -86,6 +86,14 @@ final class FavoriteCoinChartViewController: BaseViewController {
                 let lineChartDataSet = LineChartDataSet(entries: lineDataEntries)
                 lineChartDataSet.drawCirclesEnabled = false
                 lineChartDataSet.colors = [UIColor(hexCode: ColorHexCode.purple.colorCode)]
+                let gradientColors = [UIColor(hexCode: ColorHexCode.purple.colorCode).cgColor, UIColor.clear.cgColor]
+                let colorLocations:[CGFloat] = [1.0, 0.0]
+                guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                                                colors: gradientColors as CFArray,
+                                                locations: colorLocations) else {return }
+                lineChartDataSet.fill = LinearGradientFill(gradient: gradient, angle: 90)
+                lineChartDataSet.drawFilledEnabled = true
+
                 let lineChartData = LineChartData(dataSet: lineChartDataSet)
                 
                 owner.baseView.lineChart.data = lineChartData

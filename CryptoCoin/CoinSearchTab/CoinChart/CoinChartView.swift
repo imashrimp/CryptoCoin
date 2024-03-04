@@ -119,11 +119,11 @@ final class CoinChartView: BaseView {
         let view = LineChartView()
         view.noDataText = "데이터가 없습니다."
         view.noDataFont = .systemFont(ofSize: 20)
-        view.gridBackgroundColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
         view.legend.enabled = false
         view.rightAxis.enabled = false
         view.leftAxis.enabled = false
         view.xAxis.enabled = false
+        view.borderLineWidth = 0
         view.backgroundColor = UIColor(hexCode: ColorHexCode.white.colorCode)
         return view
     }()

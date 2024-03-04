@@ -49,7 +49,7 @@ final class CoinChartViewController: BaseViewController {
                 let image = value ? UIImage(systemName: ImageAsset.starFill.name) : UIImage(systemName: ImageAsset.star.name)
                 
                 owner.baseView.likeNavigationBarButton.image = image
-
+                
             }
             .disposed(by: disposeBag)
         
@@ -70,7 +70,6 @@ final class CoinChartViewController: BaseViewController {
                 owner.baseView.logoImageView.kf.setImage(with: value.image)
                 owner.baseView.coinTitleLabel.text = value.name
                 owner.baseView.currentPriceLabel.text = value.currentPrice
-//                owner.baseView.priceChangePercentLabel.text = value.priceChangePercentage24H
                 owner.baseView.highPriceComponent.priceLabel.text = value.high24H
                 owner.baseView.lowPriceComponent.priceLabel.text = value.low24H
                 owner.baseView.highestPriceComponent.priceLabel.text = value.ath
@@ -85,7 +84,15 @@ final class CoinChartViewController: BaseViewController {
                 
                 let lineChartDataSet = LineChartDataSet(entries: lineDataEntries)
                 lineChartDataSet.drawCirclesEnabled = false
+                
+                let gradientColors = [UIColor(hexCode: ColorHexCode.purple.colorCode).cgColor, UIColor.clear.cgColor]
+                let colorLocations:[CGFloat] = [1.0, 0.0]
+                guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                                                colors: gradientColors as CFArray,
+                                                locations: colorLocations) else {return }
+                lineChartDataSet.fill = LinearGradientFill(gradient: gradient, angle: 90)
                 lineChartDataSet.colors = [UIColor(hexCode: ColorHexCode.purple.colorCode)]
+                lineChartDataSet.drawFilledEnabled = true
                 let lineChartData = LineChartData(dataSet: lineChartDataSet)
                 
                 owner.baseView.lineChart.data = lineChartData
@@ -134,7 +141,7 @@ final class CoinChartViewController: BaseViewController {
         output
             .networkError
             .bind(with: self) { owner, value in
-                owner.alert(title: value, 
+                owner.alert(title: value,
                             rightButtonTitle: "확인",
                             rightButtonStyle: .default)
             }
