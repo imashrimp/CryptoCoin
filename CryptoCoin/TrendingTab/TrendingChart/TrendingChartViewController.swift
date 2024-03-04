@@ -51,10 +51,20 @@ final class TrendingChartViewController: BaseViewController {
         output
             .coinChartData
             .bind(with: self) { owner, value in
+                
+                let plusOrMinus = value.priceChangePercentage24H.prefix(1)
+                
+                if plusOrMinus == "-" {
+                    owner.baseView.priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
+                    owner.baseView.priceChangePercentLabel.text = value.priceChangePercentage24H
+                } else {
+                    owner.baseView.priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
+                    owner.baseView.priceChangePercentLabel.text = "+" + value.priceChangePercentage24H
+                }
+                
                 owner.baseView.logoImageView.kf.setImage(with: value.image)
                 owner.baseView.coinTitleLabel.text = value.name
                 owner.baseView.currentPriceLabel.text = value.currentPrice
-                owner.baseView.priceChangePercentLabel.text = value.priceChangePercentage24H
                 owner.baseView.highPriceComponent.priceLabel.text = value.high24H
                 owner.baseView.lowPriceComponent.priceLabel.text = value.low24H
                 owner.baseView.highestPriceComponent.priceLabel.text = value.ath
@@ -73,6 +83,8 @@ final class TrendingChartViewController: BaseViewController {
                 let lineChartData = LineChartData(dataSet: lineChartDataSet)
                 
                 owner.baseView.lineChart.data = lineChartData
+                
+                
                 
             }
             .disposed(by: disposeBag)

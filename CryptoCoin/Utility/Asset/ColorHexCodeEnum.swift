@@ -26,7 +26,7 @@ enum ColorHexCode {
         case .red:
             return "F04452"
         case .pink:
-            return "FFFAED"
+            return "#FCE8F9"
         case .blue:
             return "3282F8"
         case .lightBlue:

@@ -61,7 +61,19 @@ final class FavoriteCollectionViewCell: BaseCollectionViewCell {
         coinNameAndCurrencyStackView.currencyUnitLabel.text = data.currency
         
         priceLabel.text = data.price
-        priceChangePercentLabel.text = data.priceChangePercent24H
+//        priceChangePercentLabel.text = data.priceChangePercent24H
+        
+        let plusOrMinus = data.priceChangePercent24H.prefix(1)
+        
+        if plusOrMinus == "-" {
+            priceChangePercentLabel.backgroundColor = UIColor(hexCode: ColorHexCode.lightBlue.colorCode)
+            priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
+            priceChangePercentLabel.text = data.priceChangePercent24H
+        } else {
+            priceChangePercentLabel.backgroundColor = UIColor(hexCode: ColorHexCode.pink.colorCode)
+            priceChangePercentLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
+            priceChangePercentLabel.text = "+" + data.priceChangePercent24H
+        }
         
         guard let imageURL = URL(string: data.thumbnail) else { return }
         logoImageView.kf.setImage(with: imageURL,

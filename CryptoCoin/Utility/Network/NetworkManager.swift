@@ -11,12 +11,12 @@ import RxSwift
 struct NetworkManager {
     
     static func getTrendingCoinList() -> Observable<Result<[TrendEntity], NetworkError>> {
-        print("@@%%", #function)
+
         return Observable<Result<[TrendEntity], NetworkError>>.create { trendData in
             API.session.request(CryptoCoinListTarget.trending)
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: TrendingCoinResponseModel.self) { response in
-                    print("@@", #function)
+                    
                     switch response.result {
                     case .success(let value):
                         let trendCoinArr = value.coins.map {
@@ -75,13 +75,11 @@ struct NetworkManager {
     }
     
     static func getSearchedCoinList(query: CoinSearchRequestModel) -> Observable<Result<[SearchedCoinEntity], NetworkError>> {
-        print("@@%%", #function)
-        //        return Observable<[SearchedCoinEntity]>.create { coinList in
+        
         return Observable<Result<[SearchedCoinEntity], NetworkError>>.create { coinList in
             API.session.request(CryptoCoinListTarget.search(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: CoinSearchResponseModel.self) { response in
-                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         let result = value.coins
@@ -113,12 +111,11 @@ struct NetworkManager {
     }
     
     static func getCoinChartInfo(query: CoinChartRequestModel) -> Observable<Result<CoinChartEntity, NetworkError>> {
-        print("@@%%", #function)
+        
         return Observable<Result<CoinChartEntity, NetworkError>>.create { coinChartInfo in
             API.session.request(CryptoCoinListTarget.coinChart(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [CoinChartResponseModel].self) { response in
-                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         print(value)
@@ -163,13 +160,10 @@ struct NetworkManager {
     }
     
     static func getFavoriteCoinArr(query: FavoriteCoinsRequestModel) -> Observable<Result<[PresentItemEntity], NetworkError>> {
-        
-        print("@@%%", #function)
         return Observable<Result<[PresentItemEntity], NetworkError>>.create { favoriteCoinArr in
             API.session.request(CryptoCoinListTarget.favoriteCoins(query))
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
-                    print("@@", #function)
                     switch response.result {
                     case .success(let value):
                         let result = value.map {
@@ -182,7 +176,6 @@ struct NetworkManager {
                                 priceChangePercent24H: $0.priceChangePercentage24H.convertToPercentage()
                             )
                         }
-                        //                        favoriteCoinArr.onNext(result)
                         favoriteCoinArr.onNext(.success(result))
                         
                     case .failure(let error):
@@ -206,5 +199,3 @@ struct NetworkManager {
         }
     }
 }
-
-//MARK: 이스케이핑 클로저 사용한 통신
