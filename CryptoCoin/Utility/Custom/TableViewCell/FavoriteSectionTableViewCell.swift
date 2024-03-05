@@ -13,6 +13,12 @@ final class FavoriteSectionTableViewCell: BaseTableViewCell {
     
     var coinItemDidSelect: ((String) -> Void)?
     
+    private let cellTitleLabel = {
+        let view = UILabel()
+        view.font = .systemFont(ofSize: 20, weight: .heavy)
+        return view
+    }()
+    
     private let favoriteCollectionView = {
         let view = UICollectionView(frame: .zero,
                                     collectionViewLayout: trendFavoriteCollectionViewFlowLayout())
@@ -22,8 +28,11 @@ final class FavoriteSectionTableViewCell: BaseTableViewCell {
         return view
     }()
     
-    func showContents(data: [PresentItemEntity]) {
-        Observable<[PresentItemEntity]>.just(data)
+    func showContents(data: TrendEntity) {
+        
+        cellTitleLabel.text = data.sectionTitle
+        
+        Observable<[PresentItemEntity]>.just(data.data)
             .bind(to: favoriteCollectionView
                 .rx
                 .items(cellIdentifier: TrendingFavoriteCollectionViewCell.id,
@@ -45,14 +54,22 @@ final class FavoriteSectionTableViewCell: BaseTableViewCell {
         super.configure()
         
         [
+            cellTitleLabel,
             favoriteCollectionView
         ].forEach { contentView.addSubview($0) }
         
     }
     
     override func setConstraints() {
+        
+        cellTitleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(20)
+            $0.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
         favoriteCollectionView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.equalTo(cellTitleLabel.snp.bottom).offset(8)
+            $0.horizontalEdges.bottom.equalToSuperview()
             $0.height.equalTo(170)
         }
     }

@@ -28,8 +28,6 @@ extension UIView {
         
         layout.scrollDirection = .horizontal
         layout.itemSize = CGSize(width: width, height: 50)
-//        layout.minimumLineSpacing = itemSpace
-//        layout.minimumInteritemSpacing = 16
         layout.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         
         return layout

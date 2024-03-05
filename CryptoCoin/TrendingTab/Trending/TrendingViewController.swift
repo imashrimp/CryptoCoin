@@ -27,8 +27,6 @@ final class TrendingViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        baseView.trendingTableView.delegate = self
-        baseView.trendingTableView.dataSource = self
         bind()
     }
     
@@ -45,8 +43,28 @@ final class TrendingViewController: BaseViewController {
         
         output
             .presentData
-            .bind(with: self) { owner, _ in
-                owner.baseView.trendingTableView.reloadData()
+            .bind(to: baseView.trendingTableView.rx.items) { (tableView, row, data) -> UITableViewCell in
+                
+                if data.sectionTitle == "My Favorite" {
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: FavoriteSectionTableViewCell.id) as? FavoriteSectionTableViewCell else {
+                        return UITableViewCell()
+                    }
+                    cell.showContents(data: data)
+                    cell.coinItemDidSelect = { [weak self] coinId in
+                        self?.itemDidSelect.accept(coinId)
+                    }
+                    return cell
+                } else {
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
+                        return UITableViewCell()
+                    }
+                    
+                    cell.showContents(data: data)
+                    cell.itemDidSelect = { [weak self] coinId in
+                        self?.itemDidSelect.accept(coinId)
+                    }
+                    return cell
+                }
             }
             .disposed(by: disposeBag)
         
@@ -73,15 +91,15 @@ final class TrendingViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
-//        output
-//            .networkStatus
-//            .filter { $0 == false }
-//            .bind(with: self) { owner, _ in
-//                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
-//                             rightButtonTitle: "확인",
-//                             rightButtonStyle: .default)
-//            }
-//            .disposed(by: disposeBag)
+        //        output
+        //            .networkStatus
+        //            .filter { $0 == false }
+        //            .bind(with: self) { owner, _ in
+        //                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
+        //                             rightButtonTitle: "확인",
+        //                             rightButtonStyle: .default)
+        //            }
+        //            .disposed(by: disposeBag)
         
         output
             .networkStatus
@@ -92,62 +110,5 @@ final class TrendingViewController: BaseViewController {
                              rightButtonStyle: .default)
             }
             .disposed(by: disposeBag)
-    }
-    
-}
-
-extension TrendingViewController: UITableViewDelegate, UITableViewDataSource {
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.output.presentData.value.count
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.output.presentData.value[section].sectionTitle
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        if viewModel.output.presentData.value.count == 3 {
-            if indexPath.section == 0 {
-                guard
-                    let cell = tableView.dequeueReusableCell(withIdentifier: FavoriteSectionTableViewCell.id) as? FavoriteSectionTableViewCell else {
-                    return UITableViewCell()
-                }
-                cell.showContents(data: viewModel.output.presentData.value[indexPath.row].data)
-                
-                cell.coinItemDidSelect = { [weak self] value in
-                    self?.itemDidSelect.accept(value)
-                }
-                
-                return cell
-            } else {
-                guard
-                    let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
-                    return UITableViewCell()
-                }
-                cell.showContens(data: viewModel.output.presentData.value[indexPath.section].data)
-                cell.itemDidSelect = { [weak self] value in
-                    self?.itemDidSelect.accept(value)
-                }
-                return cell
-            }
-        } else if viewModel.output.presentData.value.count == 2 {
-            guard
-                let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
-                return UITableViewCell()
-            }
-            cell.showContens(data: viewModel.output.presentData.value[indexPath.section].data)
-            cell.itemDidSelect = { [weak self] value in
-                self?.itemDidSelect.accept(value)
-            }
-            return cell
-        } else {
-            return UITableViewCell()
-        }
     }
 }
