@@ -72,6 +72,26 @@ final class TrendingViewController: BaseViewController {
                             rightButtonTitle: "확인")
             }
             .disposed(by: disposeBag)
+        
+//        output
+//            .networkStatus
+//            .filter { $0 == false }
+//            .bind(with: self) { owner, _ in
+//                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
+//                             rightButtonTitle: "확인",
+//                             rightButtonStyle: .default)
+//            }
+//            .disposed(by: disposeBag)
+        
+        output
+            .networkStatus
+            .filter { $0 == .disconnect }
+            .bind(with: self) { owner, value in
+                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
+                             rightButtonTitle: "확인",
+                             rightButtonStyle: .default)
+            }
+            .disposed(by: disposeBag)
     }
     
 }

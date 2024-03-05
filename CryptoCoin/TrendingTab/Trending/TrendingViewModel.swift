@@ -28,6 +28,8 @@ final class TrendingViewModel {
         let presentData = BehaviorRelay<[TrendEntity]>(value: [])
         let pushToChart = PublishRelay<String>()
         let networkError = PublishSubject<String>()
+//        let networkStatus = PublishRelay<Bool>()
+        let networkStatus = PublishRelay<NetworkStatusType>()
     }
     
     init(coinArr: [SavedCoinEntity]) {
@@ -116,6 +118,18 @@ final class TrendingViewModel {
             .bind(with: self) { owner, _ in
                 guard let savedCoinList = owner.repository?.readSavedCryptoCoinList() else { return }
                 owner.savedCoinArr.onNext(savedCoinList)
+            }
+            .disposed(by: disposeBag)
+        
+//        NetworkStatus.shared.rx.isNetworkConnected
+//            .bind(with: self) { owner, value in
+//                owner.output.networkStatus.accept(value)
+//            }
+//            .disposed(by: disposeBag)
+        
+        NetworkStatus.shared.statusObservable
+            .bind(with: self) { owner, value in
+                owner.output.networkStatus.accept(value)
             }
             .disposed(by: disposeBag)
     }

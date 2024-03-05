@@ -37,7 +37,7 @@ struct NetworkManager {
                         
                         let trendNFTArr = value.nfts.map {
                             PresentItemEntity(
-                                id: $0.id,
+                                id: "",
                                 name: $0.name,
                                 currency: $0.symbol,
                                 thumbnail: $0.thumb,

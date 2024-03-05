@@ -14,8 +14,7 @@ final class SearchCoinViewModel {
     private let coinSearchRepository = CoinRepository()
     private let disposeBag = DisposeBag()
     
-    //    private let networkResult = BehaviorRelay<[SearchedCoinEntity]>(value: [])
-    private let networkResult = BehaviorSubject<[SearchedCoinEntity]>(value: [])
+    private let networkResult = BehaviorRelay<[SearchedCoinEntity]>(value: [])
     
     let output = Output()
     
@@ -69,13 +68,6 @@ final class SearchCoinViewModel {
                 return CoinSearchRequestModel(query: $0)
             }
             .flatMap { NetworkManager.getSearchedCoinList(query: $0) }
-        //            .bind(with: self) { owner, value in
-        
-        //                guard let savedCoinList = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
-        //                let coinIds = savedCoinList.map { $0.coinID }
-        //                owner.output.savedCoinIds.accept(coinIds)
-        //                owner.networkResult.onNext(value)
-        //            }
             .bind(with: self) { owner, value in
                 switch value {
                 case .success(let data):
@@ -83,7 +75,6 @@ final class SearchCoinViewModel {
                     let coinIds = savedCoinList.map { $0.coinID }
                     owner.output.savedCoinIds.accept(coinIds)
                     owner.output.searchedCoinList.accept(data)
-//                    owner.networkResult.onNext(data)
                 case .failure(let error):
                     owner.output.networkError.onNext(error.description)
                 }
@@ -158,7 +149,7 @@ final class SearchCoinViewModel {
             .bind(with: self) { owner, _ in
                 guard let savedCoinArr = owner.coinSearchRepository?.readSavedCryptoCoinList() else { return }
                 let coinIds = savedCoinArr.map{ $0.coinID }
-                //                owner.output.savedCoinIds.accept(coinIds)
+                owner.output.savedCoinIds.accept(coinIds)
                 owner.output.updateSavedCoinlist.accept(())
             }
             .disposed(by: disposeBag)
@@ -169,8 +160,7 @@ final class SearchCoinViewModel {
         
         guard let savedCoinList = coinSearchRepository?.readSavedCryptoCoinList() else { return }
         let coinIds = savedCoinList.map { $0.coinID }
-        //        output.savedCoinIds.accept(coinIds)
-        //        output.searchedCoinList.onNext(networkResult.value)
-        
+        output.savedCoinIds.accept(coinIds)
+        output.searchedCoinList.accept(networkResult.value)
     }
 }

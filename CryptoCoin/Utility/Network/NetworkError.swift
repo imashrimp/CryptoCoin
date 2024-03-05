@@ -7,11 +7,6 @@
 
 import Foundation
 
-enum CoinSearchError: String, Error {
-    case invalidAPIKey = "유효하지 않은 APIKey"
-}
-
-
 enum NetworkError: Int, Error {
     case badRequest = 400
     case Unauthorised = 401
