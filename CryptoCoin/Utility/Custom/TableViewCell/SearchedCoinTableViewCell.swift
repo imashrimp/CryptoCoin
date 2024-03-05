@@ -57,7 +57,7 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
         
         let coinName = coinNameLabel.text ?? ""
         let attribtuedString = NSMutableAttributedString(string: coinName)
-        let range = (coinName as NSString).range(of: keyword)
+        let range = (coinName as NSString).range(of: keyword, options: .caseInsensitive)
         attribtuedString.addAttribute(.foregroundColor, value: UIColor(hexCode: ColorHexCode.purple.colorCode), range: range)
         coinNameLabel.attributedText = attribtuedString
         
