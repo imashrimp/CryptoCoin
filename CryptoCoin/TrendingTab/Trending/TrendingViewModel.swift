@@ -81,8 +81,6 @@ final class TrendingViewModel {
                 case .failure(let error):
                     owner.output.networkError.onNext(error.description)
                 }
-                
-                
             }
             .disposed(by: disposeBag)
         
@@ -93,7 +91,6 @@ final class TrendingViewModel {
                 let trendResult = NetworkManager.getTrendingCoinList()
                 trendResult
                     .bind(with: self) { owner, value in
-                        //                        owner.output.presentData.accept(value)
                         switch value {
                         case .success(let data):
                             owner.output.presentData.accept(data)
