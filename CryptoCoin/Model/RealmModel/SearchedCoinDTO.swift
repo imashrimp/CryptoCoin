@@ -16,3 +16,11 @@ final class SearchedCoinDTO: Object {
         self.coinId = coinId
     }
 }
+
+typealias SavedCoins = [SearchedCoinDTO]
+
+extension SavedCoins {
+    func toDomain() -> [SavedCoinEntity] {
+        return self.map { SavedCoinEntity(coinID: $0.coinId) }
+    }
+}

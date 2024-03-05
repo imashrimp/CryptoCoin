@@ -47,9 +47,7 @@ final class CoinRepository {
     func readSavedCryptoCoinList() -> [SavedCoinEntity] {
         let savedCryptoCoinList = Array(realm.objects(SearchedCoinDTO.self))
         
-        let savedCoinEntityArr: [SavedCoinEntity] = savedCryptoCoinList.map { SavedCoinEntity(coinID: $0.coinId) }
-        
-        return savedCoinEntityArr
+        return savedCryptoCoinList.toDomain()
     }
     
     func checkCoinSaveState(coinId: String) -> Bool {
