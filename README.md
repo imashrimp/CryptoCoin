@@ -1,15 +1,9 @@
 # 🪙 Crypto Coin Watch
 
-- 서비스 소개: 코인 가격 정보 조회 및 즐겨찾기
+- 서비스 소개: 트렌드 코인과 NFT 정보 실시간 조회,<br>가격 차트 분석 및 즐겨찾기 기능으로 개인화된 코인 정보 관리
+  
 - 개발인원: 1인
 - 개발기간: 2024.02.26 ~ 2024.03.04
-
-
-## 🛠️ 기술스택
-- UIKit, RxSwift
-- MVVM, Input/Ouput
-- Alamofire, Realm
-- Snapkit, Kingfisher, Charts
 
 ## 핵심기능
 - 트렌트 코인 및 NFT 정보 조회
@@ -17,12 +11,25 @@
 - 차트를 통한 코인 가격 변동 기록 및 정보 조회
 - 코인 즐겨찾기 추가, 삭제를 통해 즐겨찾기 목록 관리
 
+## 🛠️ 기술스택
+- UIKit, RxSwift
+- MVVM, Input/Ouput
+- Alamofire, Realm
+- Snapkit, Kingfisher, Charts
+
 ## 고려사항
 - 코인 즐겨찾기 추가 시 저장할 데이터
-  - coinId만 DB에 저장함으로써  즐겨찾기 데이터 조회 시 사용
-  - coinId만 저장함으로써 앱 용량 저장
+  - 즐겨찾기 데이터 조회 시에 사용할 coinID만 Realm DB에 저장
+  - 앱 특성상 실시간 정보를 사용자에게 전달해야하기 때문에<br>가격정보 등은 통신을 통해 받아오는게 적합하다고 생각해 CoinID만 저장
+  - 저장 공간 절약
 - 분당 호출수 제한에 따른 과호출 에러 핸들링
+  - 과호출 시 앱의 기능이 막히게 되는데, 얼럿을 띄워 과호출이 되었음을 사용자에게 알리고<br> 사용자가 일정 시간 후 정상 상태에서 앱을 작동할 수 있도록 안내 
 
 ## 트러블슈팅
 - 의존성 주입 시 뷰모델의 초기화 구문에서 주는 값을 받을 Observable 객체의 종류
+  - PublishSubject 또는 PublishRelay로 의존성 주입을 통해 이벤트를 전달할 경우, Publish의 특성에 의해 viewModel 인스턴스가 생성된 시점에서 구독이 되어있지 않기 때문에 전달된 이벤트가 무의미함
+  - BehaviorSubject 또는 BehaviroRelay로 이벤트를 받게되면 Behavior의 특성 상 구독 이전에 받은 이벤트를 갖고 있다가 구독이 되면 해당 이벤트를 방출하므로
+  - 의존성 주입을 통해 이벤트를 전달할 때는 Behavior가 더 적합함 
 - 네트워크의 Response를 Relay타입으로 받았을 때 런타임 에러 발생
+  - Relay는 Subject와 다르게 error와 completed 이벤트를 처리하지 않음
+  - 과호출 에러를 Relay타입으로 받아서 런타입 에러 발생했고, 이를 해결하기 위해 통신 메서드의 반환 타입을 Result으로 설정해 error 이벤트를 받는 Observer를 따로 만들어 런타임 에러 해결
