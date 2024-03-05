@@ -55,7 +55,6 @@ final class CoinChartView: BaseView {
     let priceInfoHorizontalStakView = {
         let view = UIStackView()
         view.axis = .horizontal
-        //        view.distribution = .equalSpacing
         view.spacing = 20
         return view
     }()
@@ -74,7 +73,6 @@ final class CoinChartView: BaseView {
         return view
     }()
     
-    //고가
     let highPriceComponent = {
         let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
@@ -84,7 +82,7 @@ final class CoinChartView: BaseView {
         view.priceTypeTitleLabel.text = "고가"
         return view
     }()
-    //저가
+    
     let lowPriceComponent = {
         let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
@@ -94,7 +92,7 @@ final class CoinChartView: BaseView {
         view.priceTypeTitleLabel.text = "저가"
         return view
     }()
-    //신고점
+    
     let highestPriceComponent = {
         let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.red.colorCode)
@@ -104,7 +102,7 @@ final class CoinChartView: BaseView {
         view.priceTypeTitleLabel.text = "신고점"
         return view
     }()
-    //신저점
+    
     let lowestPriceComponent = {
         let view = CoinChartPriceComponent()
         view.priceTypeTitleLabel.textColor = UIColor(hexCode: ColorHexCode.blue.colorCode)
@@ -148,7 +146,6 @@ final class CoinChartView: BaseView {
             lowPriceStackView,
             lineChart,
             updateDateLabel
-            //            priceInfoHorizontalStakView
         ].forEach { addSubview($0) }
         
         [
@@ -160,11 +157,6 @@ final class CoinChartView: BaseView {
             lowPriceComponent,
             lowestPriceComponent
         ].forEach { lowPriceStackView.addArrangedSubview($0) }
-        
-        //        [
-        //        highPriceStackView,
-        //        lowPriceStackView
-        //        ].forEach { priceInfoHorizontalStakView.addArrangedSubview($0) }
     }
     
     override func setConstrinats() {
@@ -209,7 +201,7 @@ final class CoinChartView: BaseView {
         
         lineChart.snp.makeConstraints {
             $0.top.equalTo(highPriceStackView.snp.bottom)
-            $0.horizontalEdges.equalToSuperview().inset(16)
+            $0.horizontalEdges.equalToSuperview()
         }
         
         updateDateLabel.snp.makeConstraints {

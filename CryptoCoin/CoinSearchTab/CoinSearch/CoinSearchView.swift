@@ -14,12 +14,13 @@ final class CoinSearchView: BaseView {
         view.text = "Search"
         view.font = .systemFont(ofSize: 38,
                                 weight: .bold)
-        
         return view
     }()
     
     let coinSearchBar = {
         let view = UISearchBar()
+        view.backgroundImage = UIImage()
+        view.placeholder = "코인명 또는 심볼 검색"
         return view
     }()
     
@@ -29,6 +30,7 @@ final class CoinSearchView: BaseView {
         view.separatorStyle = .none
         view.register(SearchedCoinTableViewCell.self,
                       forCellReuseIdentifier: SearchedCoinTableViewCell.id)
+        view.keyboardDismissMode = .onDrag
         return view
     }()
     
@@ -48,15 +50,13 @@ final class CoinSearchView: BaseView {
         }
         
         coinSearchBar.snp.makeConstraints {
-            $0.top.equalTo(viewTitleLabel.snp.bottom).offset(4)
+            $0.top.equalTo(viewTitleLabel.snp.bottom)
             $0.horizontalEdges.equalToSuperview()
         }
         
         searchCoinTableView.snp.makeConstraints {
-            $0.top.equalTo(coinSearchBar.snp.bottom).offset(8)
+            $0.top.equalTo(coinSearchBar.snp.bottom)
             $0.horizontalEdges.bottom.equalTo(self.safeAreaLayoutGuide)
         }
     }
-    
-    
 }

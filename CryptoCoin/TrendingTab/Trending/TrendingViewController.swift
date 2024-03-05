@@ -51,7 +51,7 @@ final class TrendingViewController: BaseViewController {
                 switch value {
                 case .networkDisconnect:
                     owner.baseView.trendingTableView.backgroundView = BackgroundView(
-                        message: "데이터를 불러오지 못했습니다.",
+                        message: "데이터를 불러오지 못했습니다",
                         buttonHidden: false,
                         retrtyButtonTapped: {
                             retryButtonTapped.accept(())
@@ -59,7 +59,7 @@ final class TrendingViewController: BaseViewController {
                     )
                 case .connectedWithoutData:
                     owner.baseView.trendingTableView.backgroundView = BackgroundView(
-                        message: "데이터가 없습니다."
+                        message: "데이터가 없습니다"
                     )
                 case .connectedWithData:
                     owner.baseView.trendingTableView.backgroundView = nil
@@ -115,25 +115,5 @@ final class TrendingViewController: BaseViewController {
                             rightButtonTitle: "확인")
             }
             .disposed(by: disposeBag)
-        
-        //        output
-        //            .networkStatus
-        //            .filter { $0 == false }
-        //            .bind(with: self) { owner, _ in
-        //                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
-        //                             rightButtonTitle: "확인",
-        //                             rightButtonStyle: .default)
-        //            }
-        //            .disposed(by: disposeBag)
-        
-//        output
-//            .networkStatus
-//            .filter { $0 == .disconnect }
-//            .bind(with: self) { owner, value in
-//                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
-//                             rightButtonTitle: "확인",
-//                             rightButtonStyle: .default)
-//            }
-//            .disposed(by: disposeBag)
     }
 }

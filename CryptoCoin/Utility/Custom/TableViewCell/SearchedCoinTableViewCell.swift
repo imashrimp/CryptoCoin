@@ -78,6 +78,7 @@ final class SearchedCoinTableViewCell: BaseTableViewCell {
     }
     
     override func configure() {
+        super.configure()
         [
         logoImageView,
         coinNameAndCurrencyUnitStackView,

@@ -120,24 +120,11 @@ final class TrendingViewModel {
             }
             .disposed(by: disposeBag)
         
-//        NetworkStatus.shared.rx.isNetworkConnected
-//            .bind(with: self) { owner, value in
-//                owner.output.networkStatus.accept(value)
-//            }
-//            .disposed(by: disposeBag)
-        
         NetworkStatus.shared.statusObservable
             .bind(with: self) { owner, value in
-//                owner.output.networkStatus.accept(value)
                 if value == .disconnect {
                     owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
                 }
-            }
-            .disposed(by: disposeBag)
-        
-        NetworkStatus.shared.statusObservable
-            .bind(with: self) { owner, value in
-                owner.output.networkStatus.accept(value)
             }
             .disposed(by: disposeBag)
     }

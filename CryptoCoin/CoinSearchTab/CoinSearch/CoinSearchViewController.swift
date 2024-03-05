@@ -45,6 +45,27 @@ final class CoinSearchViewController: BaseViewController {
         let output = seachViewModel.output
         
         output
+            .tableViewBackgroundViewState
+            .bind(with: self) { owner, value in
+                switch value {
+                case .networkDisconnect:
+                    owner.baseView.searchCoinTableView.backgroundView = BackgroundView(
+                        message: "검색결과를 불러오지 못했습니다",
+                        buttonHidden: false,
+                        retrtyButtonTapped: {
+                        }
+                    )
+                case .connectedWithoutData:
+                    owner.baseView.searchCoinTableView.backgroundView = BackgroundView(
+                        message: "검색된 코인이 없습니다"
+                    )
+                case .connectedWithData:
+                    owner.baseView.searchCoinTableView.backgroundView = nil
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        output
             .searchedCoinList
             .bind(to: baseView.searchCoinTableView
                 .rx

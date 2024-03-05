@@ -28,6 +28,7 @@ final class SearchCoinViewModel {
     }
     
     struct Output {
+        let tableViewBackgroundViewState = BehaviorRelay<BackgroundViewState>(value: .connectedWithoutData)
         let searchedCoinList = BehaviorRelay<[SearchedCoinEntity]>(value: [])
         let searchKeyword = BehaviorRelay<String>(value: "")
         let transitionToCoinChartView = PublishSubject<String>()
@@ -59,7 +60,6 @@ final class SearchCoinViewModel {
         
         let searchKeyword = BehaviorRelay(value: "")
         
-        
         input.searchButtonTapped
             .withLatestFrom(input.searchWord)
             .distinctUntilChanged()
@@ -75,6 +75,13 @@ final class SearchCoinViewModel {
                     let coinIds = savedCoinList.map { $0.coinID }
                     owner.output.savedCoinIds.accept(coinIds)
                     owner.output.searchedCoinList.accept(data)
+                    
+                    if data.isEmpty {
+                        owner.output.tableViewBackgroundViewState.accept(.connectedWithoutData)
+                    } else {
+                        owner.output.tableViewBackgroundViewState.accept(.connectedWithData)
+                    }
+                    
                 case .failure(let error):
                     owner.output.networkError.onNext(error.description)
                 }

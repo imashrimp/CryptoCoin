@@ -89,10 +89,7 @@ final class TrendingChartViewController: BaseViewController {
                 lineChartDataSet.drawFilledEnabled = true
                 let lineChartData = LineChartData(dataSet: lineChartDataSet)
                 
-                owner.baseView.lineChart.data = lineChartData
-                
-                
-                
+                owner.baseView.lineChart.data = lineChartData 
             }
             .disposed(by: disposeBag)
         

@@ -22,6 +22,7 @@ final class BackgroundView: BaseView {
     private let stateMessageLabel = {
         let view = UILabel()
         view.font = .systemFont(ofSize: 20, weight: .heavy)
+        view.textColor = UIColor(hexCode: ColorHexCode.gray.colorCode, alpha: 0.8)
         return view
     }()
     

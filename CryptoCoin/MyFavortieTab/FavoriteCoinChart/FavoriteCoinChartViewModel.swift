@@ -15,8 +15,7 @@ final class FavoriteCoinChartViewModel {
     
     private let repository = CoinRepository()
     private let disposeBag = DisposeBag()
-    
-    //    private let coinId = BehaviorSubject<String?>(value: nil)
+
     private let coinId = BehaviorRelay<String?>(value: nil)
     
     let output = Output()
