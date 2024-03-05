@@ -16,43 +16,11 @@ struct NetworkManager {
             API.session.request(CryptoCoinListTarget.trending)
                 .validate(statusCode: 200...299)
                 .responseDecodable(of: TrendingCoinResponseModel.self) { response in
-                    
                     switch response.result {
                     case .success(let value):
-                        let trendCoinArr = value.coins.map {
-                            PresentItemEntity(
-                                id: $0.item.id,
-                                name: $0.item.name,
-                                currency: $0.item.symbol,
-                                thumbnail: $0.item.thumb,
-                                price: $0.item.data.price,
-                                priceChangePercent24H: $0.item.data.priceChangePercentage24H["krw"]?.convertToPercentage() ?? "0.0%"
-                            )
-                        }
-                        
-                        let trendCoinPresentData = TrendEntity(
-                            sectionTitle: "Top 15 Coin",
-                            data: trendCoinArr
-                        )
-                        
-                        let trendNFTArr = value.nfts.map {
-                            PresentItemEntity(
-                                id: "",
-                                name: $0.name,
-                                currency: $0.symbol,
-                                thumbnail: $0.thumb,
-                                price: $0.data.floorPrice,
-                                priceChangePercent24H: $0.data.floorPriceInUsd24HPercentageChange.convertToPercent()
-                            )
-                        }
-                        
-                        let trendNFTPresentData = TrendEntity(
-                            sectionTitle: "Top 7 NFT",
-                            data: trendNFTArr
-                        )
-                        
-                        let result: [TrendEntity] = [trendCoinPresentData, trendNFTPresentData]
+                        let result = value.toDomain()
                         trendData.onNext(.success(result))
+                        
                     case .failure(let error):
                         let errorCode = error.responseCode ?? 0
                         
@@ -82,11 +50,7 @@ struct NetworkManager {
                 .responseDecodable(of: CoinSearchResponseModel.self) { response in
                     switch response.result {
                     case .success(let value):
-                        let result = value.coins
-                            .map { SearchedCoinEntity(id: $0.id,
-                                                      name: $0.name,
-                                                      currencyUnit: $0.symbol,
-                                                      logo: $0.large) }
+                        let result = value.toDomain()
                         coinList.onNext(.success(result))
                     case .failure(let error):
                         let errorCode = error.responseCode ?? 0
@@ -118,26 +82,8 @@ struct NetworkManager {
                 .responseDecodable(of: [CoinChartResponseModel].self) { response in
                     switch response.result {
                     case .success(let value):
-                        print(value)
-                        if  let coinData = value.first,
-                            let imageURL = URL(string: coinData.image),
-                            let updateDate = coinData.lastUpdated.toDate() {
-                            let result = CoinChartEntity(
-                                id: coinData.id,
-                                symbol: coinData.symbol,
-                                name: coinData.name,
-                                image: imageURL,
-                                currentPrice: coinData.currentPrice.convertToDecimal(),
-                                high24H: coinData.high24H.convertToDecimal(),
-                                low24H: coinData.low24H.convertToDecimal(),
-                                priceChangePercentage24H: coinData.priceChangePercentage24H.convertToPercentage(),
-                                ath: coinData.ath.convertToDecimal(),
-                                atl: coinData.atl.convertToDecimal(),
-                                lastUpdated: updateDate.toString(format: "M/dd HH:mm:ss") + " 업데이트",
-                                oneWeekPriceRecord: coinData.sparklineIn7D.price
-                            )
-                            coinChartInfo.onNext(.success(result))
-                        }
+                        let result = value.toDomain()
+                        coinChartInfo.onNext(.success(result))
                     case .failure(let error):
                         let errorCode = error.responseCode ?? 0
                         
@@ -166,16 +112,7 @@ struct NetworkManager {
                 .responseDecodable(of: [FavoriteCoinInfoResponseModel].self) { response in
                     switch response.result {
                     case .success(let value):
-                        let result = value.map {
-                            PresentItemEntity(
-                                id: $0.id,
-                                name: $0.name,
-                                currency: $0.symbol,
-                                thumbnail: $0.image,
-                                price: $0.currentPrice.convertToDecimal(),
-                                priceChangePercent24H: $0.priceChangePercentage24H.convertToPercentage()
-                            )
-                        }
+                        let result = value.toDomain()
                         favoriteCoinArr.onNext(.success(result))
                         
                     case .failure(let error):

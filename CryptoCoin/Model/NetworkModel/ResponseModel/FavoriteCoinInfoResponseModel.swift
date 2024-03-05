@@ -19,3 +19,20 @@ struct FavoriteCoinInfoResponseModel: Decodable {
         case priceChangePercentage24H = "price_change_percentage_24h"
     }
 }
+
+typealias FavoriteCoinInfoDTO = [FavoriteCoinInfoResponseModel]
+
+extension FavoriteCoinInfoDTO {
+    func toDomain() -> [PresentItemEntity] {
+        return self.map {
+            PresentItemEntity(
+                id: $0.id,
+                name: $0.name,
+                currency: $0.symbol,
+                thumbnail: $0.image,
+                price: $0.currentPrice.convertToDecimal(),
+                priceChangePercent24H: $0.priceChangePercentage24H.convertToPercentage()
+            )
+        }
+    }
+}

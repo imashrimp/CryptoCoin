@@ -49,10 +49,6 @@ final class TrendingViewModel {
     
     func transform(input: Input) {
         
-        /// 기본적 구조는 주입 받은 coinID 배열을 통해 통신 분기처리를 할 것이며
-        /// 이 데이터와 무관하게 Trend 데이터는 받야야함
-        /// 그렇다면 주입받은 coinID 수와 무관하게 이를 호출해서 combineLastest 등으로 테이블 뷰 다시 그리게
-
         savedCoinArr
             .filter { $0.count >= 2 }
             .map { $0.map { $0.coinID}.joined(separator: ",") }

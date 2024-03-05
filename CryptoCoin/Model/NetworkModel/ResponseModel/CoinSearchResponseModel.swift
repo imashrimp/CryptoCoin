@@ -22,3 +22,16 @@ struct Coin: Decodable {
         case large
     }
 }
+
+extension CoinSearchResponseModel {
+    func toDomain() -> [SearchedCoinEntity] {
+        return self.coins.map {
+            SearchedCoinEntity(
+                id: $0.id,
+                name: $0.name,
+                currencyUnit: $0.symbol,
+                logo: $0.large
+            )
+        }
+    }
+}

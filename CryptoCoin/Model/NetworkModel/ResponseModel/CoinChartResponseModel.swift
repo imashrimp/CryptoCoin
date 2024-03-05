@@ -29,13 +29,49 @@ struct CoinChartResponseModel: Decodable {
         case lastUpdated = "last_updated"
         case sparklineIn7D = "sparkline_in_7d"
     }
-    
-//    func toDomain() -> CoinChartEntity {
-//        
-//    }
 }
 
 struct SparklineIn7D: Decodable {
     let price: [Double]
+}
+
+typealias CoinChartDataDTO = [CoinChartResponseModel]
+
+extension CoinChartDataDTO {
+    func toDomain() -> CoinChartEntity {
+        if let coinData = self.first,
+           let imageURL = URL(string: coinData.image),
+           let updateDate = coinData.lastUpdated.toDate() {
+            return CoinChartEntity(
+                id: coinData.id,
+                symbol: coinData.symbol,
+                name: coinData.name,
+                image: imageURL,
+                currentPrice: coinData.currentPrice.convertToDecimal(),
+                high24H: coinData.high24H.convertToDecimal(),
+                low24H: coinData.low24H.convertToDecimal(),
+                priceChangePercentage24H: coinData.priceChangePercentage24H.convertToPercentage(),
+                ath: coinData.ath.convertToDecimal(),
+                atl: coinData.atl.convertToDecimal(),
+                lastUpdated: updateDate.toString(format: "M/dd HH:mm:ss") + " 업데이트",
+                oneWeekPriceRecord: coinData.sparklineIn7D.price
+            )
+        } else {
+            return CoinChartEntity(
+                id: "",
+                symbol: "",
+                name: "",
+                image: URL(string: "")!,
+                currentPrice: "",
+                high24H: "",
+                low24H: "",
+                priceChangePercentage24H: "",
+                ath: "",
+                atl: "",
+                lastUpdated: "",
+                oneWeekPriceRecord: [0.0]
+            )
+        }
+    }
 }
 
