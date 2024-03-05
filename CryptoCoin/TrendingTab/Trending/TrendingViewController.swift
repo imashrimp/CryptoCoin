@@ -33,13 +33,39 @@ final class TrendingViewController: BaseViewController {
     private func bind() {
         
         let updateFavoriteCoinList = PublishRelay<Void>()
+        let retryButtonTapped = PublishRelay<Void>()
         
         let input = TrendingViewModel.Input(itemDidSelect: itemDidSelect,
-                                            updateFavoriteCoinList: updateFavoriteCoinList)
+                                            updateFavoriteCoinList: updateFavoriteCoinList, 
+                                            retryButtonTapped: retryButtonTapped)
         
         viewModel.transform(input: input)
         
         let output = viewModel.output
+        
+        output
+            .tableViewBackgroundViewState
+            .bind(with: self) {
+                owner,
+                value in
+                switch value {
+                case .networkDisconnect:
+                    owner.baseView.trendingTableView.backgroundView = BackgroundView(
+                        message: "데이터를 불러오지 못했습니다.",
+                        buttonHidden: false,
+                        retrtyButtonTapped: {
+                            retryButtonTapped.accept(())
+                        }
+                    )
+                case .connectedWithoutData:
+                    owner.baseView.trendingTableView.backgroundView = BackgroundView(
+                        message: "데이터가 없습니다."
+                    )
+                case .connectedWithData:
+                    owner.baseView.trendingTableView.backgroundView = nil
+                }
+            }
+            .disposed(by: disposeBag)
         
         output
             .presentData
@@ -58,7 +84,6 @@ final class TrendingViewController: BaseViewController {
                     guard let cell = tableView.dequeueReusableCell(withIdentifier: TrendingTableViewCell.id) as? TrendingTableViewCell else {
                         return UITableViewCell()
                     }
-                    
                     cell.showContents(data: data)
                     cell.itemDidSelect = { [weak self] coinId in
                         self?.itemDidSelect.accept(coinId)
@@ -101,14 +126,14 @@ final class TrendingViewController: BaseViewController {
         //            }
         //            .disposed(by: disposeBag)
         
-        output
-            .networkStatus
-            .filter { $0 == .disconnect }
-            .bind(with: self) { owner, value in
-                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
-                             rightButtonTitle: "확인",
-                             rightButtonStyle: .default)
-            }
-            .disposed(by: disposeBag)
+//        output
+//            .networkStatus
+//            .filter { $0 == .disconnect }
+//            .bind(with: self) { owner, value in
+//                owner.alert( title: "네트워크 연결 상태가 불안합니다.\n앱 종료 후 다시 실행해주세요.",
+//                             rightButtonTitle: "확인",
+//                             rightButtonStyle: .default)
+//            }
+//            .disposed(by: disposeBag)
     }
 }

@@ -21,14 +21,15 @@ final class TrendingViewModel {
     struct Input {
         let itemDidSelect: PublishRelay<(String)>
         let updateFavoriteCoinList: PublishRelay<Void>
+        let retryButtonTapped: PublishRelay<Void>
     }
     
     struct Output {
         let favoriteAndTrendItems = PublishRelay<[[PresentItemEntity]]>()
+        let tableViewBackgroundViewState = PublishRelay<BackgroundViewState>()
         let presentData = BehaviorRelay<[TrendEntity]>(value: [])
         let pushToChart = PublishRelay<String>()
         let networkError = PublishSubject<String>()
-//        let networkStatus = PublishRelay<Bool>()
         let networkStatus = PublishRelay<NetworkStatusType>()
     }
     
@@ -88,12 +89,17 @@ final class TrendingViewModel {
         savedCoinArr
             .filter { $0.count < 2 }
             .bind(with: self) { owner, _ in
-                let trendResult = NetworkManager.getTrendingCoinList()
+                let trendResult = NetworkManager.getTrendingCoinList().share()
                 trendResult
                     .bind(with: self) { owner, value in
                         switch value {
                         case .success(let data):
                             owner.output.presentData.accept(data)
+                            if data.isEmpty {
+                                owner.output.tableViewBackgroundViewState.accept(.connectedWithoutData)
+                            } else {
+                                owner.output.tableViewBackgroundViewState.accept(.connectedWithData)
+                            }
                         case .failure(let error):
                             owner.output.networkError.onNext(error.description)
                         }
@@ -123,6 +129,15 @@ final class TrendingViewModel {
 //                owner.output.networkStatus.accept(value)
 //            }
 //            .disposed(by: disposeBag)
+        
+        NetworkStatus.shared.statusObservable
+            .bind(with: self) { owner, value in
+//                owner.output.networkStatus.accept(value)
+                if value == .disconnect {
+                    owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
+                }
+            }
+            .disposed(by: disposeBag)
         
         NetworkStatus.shared.statusObservable
             .bind(with: self) { owner, value in
