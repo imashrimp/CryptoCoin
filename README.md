@@ -47,12 +47,12 @@
 <br>
 
 ## 트러블슈팅
-- 의존성 주입 시 뷰모델의 초기화 구문에서 주는 값을 받을 RxCocoa 객체의 종류(Behavior VS Publish)
-  - 의존성 주입을 통해 초기값이 설정되는 객체는 해당 시점에서 구독되지 않았기 때문에 Publish타입으로 초기값 설정 이벤트를 받으면 이벤트 전달이 무의미 하게됨
-  - BehaviorSubject 또는 BehaviroRelay로 이벤트를 받게 되면, Behavior의 특성상 구독 이전에 받은 이벤트를 갖고 있다가 구독이 되면 해당 이벤트를 방출하므로 의존성 주입을 통해 이벤트를 전달할 때는 Behavior가 더 적합함
+1. Behavior, Publish의 특성을 고려한 객체 선택
+     - 의존성 주입을 통해 초기값이 설정되는 객체는 해당 시점에서 구독되지 않았기 때문에 Publish타입으로 초기값 설정을 위해 받은 이벤트를 방출하지 못함
+     - BehaviorSubject 또는 BehaviroRelay로 이벤트를 받게 되면, Behavior의 특성상 구독 이전에 받은 이벤트를 갖고 있다가 구독이 되면 해당 이벤트를 방출하므로 의존성 주입을 통해 이벤트를 전달할 때는 Behavior가 더 적합함
     
 <br>
 
-- 네트워크의 Response를 Relay타입으로 받았을 때 런타임 에러 발생
-  - Relay는 Subject와 다르게 error와 completed 이벤트를 처리하지 않음
-  - 과호출 에러를 Relay타입으로 받아서 런타입 에러 발생했고,<br>이를 해결하기 위해 통신 메서드의 반환 타입을 Result으로 설정해 error 이벤트를 받는 객체를 Subject 타입으로 따로 만들어 런타임 에러 해결
+2. 네트워크의 Response를 Relay타입으로 받았을 때 런타임 에러 발생
+     - Relay는 Subject와 다르게 error와 completed 이벤트를 처리하지 않음
+     - 과호출 에러를 Relay타입으로 받아서 런타입 에러 발생했고,<br>이를 해결하기 위해 통신 메서드의 반환 타입을 Result으로 설정해 error 이벤트를 받는 객체를 Subject 타입으로 따로 만들어 런타임 에러 해결
