@@ -120,13 +120,24 @@ final class TrendingViewModel {
             }
             .disposed(by: disposeBag)
         
-        NetworkStatus.shared.statusObservable
+        NetworkMonitor.shared.networkConnected
+            .compactMap { $0 }
+            .filter { $0 == false }
             .bind(with: self) { owner, value in
-                if value == .disconnect {
-                    owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
-                }
+                owner.output.presentData.accept([])
+                owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
             }
             .disposed(by: disposeBag)
+        
+        input
+            .retryButtonTapped
+            .bind(with: self) { owner, value in
+                guard let savedCoins = owner.repository?.readSavedCryptoCoinList() else { return }
+                owner.savedCoinArr.onNext(savedCoins)
+            }
+            .disposed(by: disposeBag)
+        
+        
     }
     
     @objc private func updateCoinListNoti() {

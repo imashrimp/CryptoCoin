@@ -50,17 +50,11 @@ final class TrendingViewController: BaseViewController {
                 value in
                 switch value {
                 case .networkDisconnect:
-                    owner.baseView.trendingTableView.backgroundView = BackgroundView(
-                        message: "데이터를 불러오지 못했습니다",
-                        buttonHidden: false,
-                        retrtyButtonTapped: {
-                            retryButtonTapped.accept(())
-                        }
-                    )
+                    owner.baseView.trendingTableView.backgroundView = EmptyDataView(viewState: value, retryButtonCompletion: {
+                        retryButtonTapped.accept(())
+                    })
                 case .connectedWithoutData:
-                    owner.baseView.trendingTableView.backgroundView = BackgroundView(
-                        message: "데이터가 없습니다"
-                    )
+                    owner.baseView.trendingTableView.backgroundView = EmptyDataView(viewState: value)
                 case .connectedWithData:
                     owner.baseView.trendingTableView.backgroundView = nil
                 }

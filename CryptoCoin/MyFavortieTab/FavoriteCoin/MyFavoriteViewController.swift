@@ -44,16 +44,18 @@ final class MyFavoriteViewController: BaseViewController {
             .bind(with: self) { owner, value in
                 switch value {
                 case .networkDisconnect:
-                    owner.baseView.favoriteCoinCollectionView.backgroundView = BackgroundView(
-                        message: "저장된 코인을 불러오지 못했습니다",
-                        buttonHidden: false,
-                        retrtyButtonTapped: {
-                        }
-                    )
+//                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(
+//                        message: "저장된 코인을 불러오지 못했습니다",
+//                        buttonHidden: false,
+//                        retrtyButtonTapped: {
+//                        }
+//                    )
+                    print("저장된 코인을 불러오지 못했습니다")
                 case .connectedWithoutData:
-                    owner.baseView.favoriteCoinCollectionView.backgroundView = BackgroundView(
-                        message: "저장된 코인이 없습니다"
-                    )
+//                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(
+//                        message: "저장된 코인이 없습니다"
+//                    )
+                    print("저장된 코인이 없습니다")
                 case .connectedWithData:
                     owner.baseView.favoriteCoinCollectionView.backgroundView = nil
                 }

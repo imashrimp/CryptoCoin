@@ -28,6 +28,7 @@ final class TrendingView: BaseView {
         return view
     }()
     
+    
     override func configure() {
         super.configure()
         [

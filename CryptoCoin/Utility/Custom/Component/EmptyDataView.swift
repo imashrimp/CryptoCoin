@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class BackgroundView: BaseView {
+final class EmptyDataView: BaseView {
     
     private var retryButtonCompletion: (() -> Void)?
     
@@ -26,7 +26,7 @@ final class BackgroundView: BaseView {
         return view
     }()
     
-    private let networkRetryButton = {
+    let networkRetryButton = {
         let view = UIButton()
         view.setTitle("재시도", for: .normal)
         view.setTitleColor(UIColor(hexCode: ColorHexCode.white.colorCode), for: .normal)
@@ -35,15 +35,22 @@ final class BackgroundView: BaseView {
         return view
     }()
     
-    init(message: String, buttonHidden: Bool = true, retrtyButtonTapped: (() -> Void)? = nil) {
-        
-        self.stateMessageLabel.text = message
-        self.networkRetryButton.isHidden = buttonHidden
-        self.retryButtonCompletion = retrtyButtonTapped
+    init(viewState: BackgroundViewState, retryButtonCompletion: (() -> Void)? = nil) {
         super.init(frame: .zero)
-        networkRetryButton.addTarget(self,
-                                     action: #selector(networkRetryButtonTapped),
-                                     for: .touchUpInside)
+        switch viewState {
+        case .connectedWithoutData:
+            stateMessageLabel.text = "데이터가 없습니다"
+            networkRetryButton.isHidden = true
+        case .networkDisconnect:
+            stateMessageLabel.text = "네트워크 연결 상태를 확인해주세요"
+            networkRetryButton.isHidden = false
+            networkRetryButton.addTarget(self,
+                                         action: #selector(networkRetryButtonTapped),
+                                         for: .touchUpInside)
+            self.retryButtonCompletion = retryButtonCompletion
+        default:
+            return
+        }
     }
     
     @objc private func networkRetryButtonTapped() {
