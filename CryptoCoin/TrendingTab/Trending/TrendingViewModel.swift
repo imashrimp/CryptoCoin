@@ -119,14 +119,14 @@ final class TrendingViewModel {
             }
             .disposed(by: disposeBag)
         
-        NetworkMonitor.shared.networkConnected
-            .compactMap { $0 }
-            .filter { $0 == false }
-            .bind(with: self) { owner, value in
-                owner.output.presentData.accept([])
-                owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
-            }
-            .disposed(by: disposeBag)
+                NetworkMonitor.shared.networkConnected
+                    .compactMap { $0 }
+                    .filter { $0 == false }
+                    .bind(with: self) { owner, value in
+                        owner.output.presentData.accept([])
+                        owner.output.tableViewBackgroundViewState.accept(.networkDisconnect)
+                    }
+                    .disposed(by: disposeBag)
         
         input
             .retryButtonTapped
@@ -135,8 +135,6 @@ final class TrendingViewModel {
                 owner.savedCoinArr.onNext(savedCoins)
             }
             .disposed(by: disposeBag)
-        
-        
     }
     
     @objc private func updateCoinListNoti() {

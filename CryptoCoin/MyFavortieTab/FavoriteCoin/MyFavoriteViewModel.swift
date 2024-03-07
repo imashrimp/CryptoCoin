@@ -24,7 +24,7 @@ final class MyFavoriteViewModel {
     }
     
     struct Output {
-//        let backgroundViewState = PublishRelay<BackgroundViewState>()
+        //        let backgroundViewState = PublishRelay<BackgroundViewState>()
         let backgroundViewState = BehaviorRelay<BackgroundViewState>(value: .connectedWithoutData)
         let favoriteCoinArr = PublishRelay<[PresentItemEntity]>()
         let selectedCoinId = PublishRelay<String>()
@@ -48,15 +48,11 @@ final class MyFavoriteViewModel {
     func transform(input: Input) {
         
         let coinID = BehaviorRelay<String>(value: "")
-    
+        
         savedCoinArr
             .bind(with: self) { owner, value in
                 let coinIDs = value.map { $0.coinID }.joined(separator: ",")
-//                if value.isEmpty {
-//                    owner.output.favoriteCoinArr.accept([])
-//                } else {
-                    coinID.accept(coinIDs)
-//                }
+                coinID.accept(coinIDs)
             }
             .disposed(by: disposeBag)
         
@@ -92,14 +88,6 @@ final class MyFavoriteViewModel {
             .bind(with: self) { owner, _ in
                 guard let savedCoinList = owner.repository?.readSavedCryptoCoinList() else { return }
                 owner.savedCoinArr.accept(savedCoinList)
-//                let coinIDs = savedCoinList.map { $0.coinID }.joined(separator: ",")
-//                if coinIDs.isEmpty {
-//                    owner.output.favoriteCoinArr.accept([])
-//                    owner.output.backgroundViewState.accept(.connectedWithoutData)
-//                } else {
-//                    coinID.accept(coinIDs)
-//                    owner.output.backgroundViewState.accept(.connectedWithData)
-//                }
             }
             .disposed(by: disposeBag)
         

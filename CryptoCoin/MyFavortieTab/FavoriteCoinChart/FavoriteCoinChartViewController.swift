@@ -35,7 +35,8 @@ final class FavoriteCoinChartViewController: BaseViewController {
         let coinData = PublishRelay<(AlertPresentEnum, String)>()
         
         let input = FavoriteCoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap,
-                                                     alertActionTapped: coinData)
+                                                     alertActionTapped: coinData, 
+                                                     updateChartData: baseView.badNetworkView.networkRetryButton.rx.tap)
         
         viewModel.transform(input: input)
         
@@ -69,7 +70,6 @@ final class FavoriteCoinChartViewController: BaseViewController {
                 owner.baseView.logoImageView.kf.setImage(with: value.image)
                 owner.baseView.coinTitleLabel.text = value.name
                 owner.baseView.currentPriceLabel.text = value.currentPrice
-//                owner.baseView.priceChangePercentLabel.text = value.priceChangePercentage24H
                 owner.baseView.highPriceComponent.priceLabel.text = value.high24H
                 owner.baseView.lowPriceComponent.priceLabel.text = value.low24H
                 owner.baseView.highestPriceComponent.priceLabel.text = value.ath
@@ -153,10 +153,13 @@ final class FavoriteCoinChartViewController: BaseViewController {
                 switch value {
                 case .networkDisconnect:
                     owner.baseView.badNetworkView.isHidden = false
+                    owner.navigationItem.rightBarButtonItem = nil
                 case .connectedWithoutData:
                     owner.baseView.badNetworkView.isHidden = true
+                    owner.navigationItem.rightBarButtonItem = owner.baseView.likeNavigationBarButton
                 case .connectedWithData:
-                    return
+                    owner.baseView.badNetworkView.isHidden = true
+                    owner.navigationItem.rightBarButtonItem = owner.baseView.likeNavigationBarButton
                 }
             }
             .disposed(by: disposeBag)

@@ -134,7 +134,11 @@ final class CoinChartView: BaseView {
         return view
     }()
     
-    let badNetworkView = EmptyDataView(viewState: .networkDisconnect)
+    let badNetworkView = {
+        let view = EmptyDataView(viewState: .networkDisconnect)
+        view.isHidden = true
+        return view
+    }()
     
     override func configure() {
         super.configure()
@@ -214,7 +218,8 @@ final class CoinChartView: BaseView {
         }
         
         badNetworkView.snp.makeConstraints {
-            $0.edges.equalTo(safeAreaLayoutGuide)
+//            $0.edges.equalTo(safeAreaLayoutGuide)
+            $0.edges.equalToSuperview()
         }
     }
 }

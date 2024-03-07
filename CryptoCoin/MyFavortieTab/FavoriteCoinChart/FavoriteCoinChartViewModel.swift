@@ -15,7 +15,7 @@ final class FavoriteCoinChartViewModel {
     
     private let repository = CoinRepository()
     private let disposeBag = DisposeBag()
-
+    
     private let coinId = BehaviorRelay<String?>(value: nil)
     
     let output = Output()
@@ -23,6 +23,7 @@ final class FavoriteCoinChartViewModel {
     struct Input {
         let likeButtonTapped: ControlEvent<Void>
         let alertActionTapped: PublishRelay<(AlertPresentEnum, String)>
+        let updateChartData: ControlEvent<Void>
     }
     
     struct Output {
@@ -31,7 +32,6 @@ final class FavoriteCoinChartViewModel {
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
         let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
         let networkError = PublishSubject<String>()
-//        let networkState = BehaviorRelay<BackgroundViewState>(value: .connectedWithoutData)
         let networkState = PublishRelay<BackgroundViewState>()
     }
     
@@ -51,18 +51,17 @@ final class FavoriteCoinChartViewModel {
     
     func transform(input: Input) {
         coinId
-            .map{
-                guard let coinId = $0 else { return "" }
-                return coinId
-            }
+            .compactMap { $0 }
+            .filter { !$0.isEmpty }
             .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0, sparkline: "true" ) }
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
-            .bind(with: self) { owner, value in                
+            .bind(with: self) { owner, value in
                 switch value {
                 case .success(let data):
                     guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: data.id) else { return }
                     owner.output.saveButtonState.accept(coinSaved)
                     owner.output.coinChartData.onNext(data)
+                    owner.output.networkState.accept(.connectedWithData)
                     
                     let plusOrMinus = data.priceChangePercentage24H.prefix(1)
                     
@@ -93,7 +92,8 @@ final class FavoriteCoinChartViewModel {
                     } else {
                         owner.output.presentAlert.accept((AlertPresentEnum.overLimit, coinId))
                     }
-                }            }
+                }
+            }
             .disposed(by: disposeBag)
         
         input
@@ -122,19 +122,25 @@ final class FavoriteCoinChartViewModel {
         
         NetworkMonitor.shared.networkConnected
             .compactMap { $0 }
+            .filter { $0 == false }
+            .bind(with: self) { owner, _ in
+                owner.output.networkState.accept(.networkDisconnect)
+            }
+            .disposed(by: disposeBag)
+        
+        input
+            .updateChartData
+            .withLatestFrom(coinId)
+            .compactMap { $0 }
             .bind(with: self) { owner, value in
-                if value {
-                    owner.output.networkState.accept(.connectedWithData)
-                } else {
-                    owner.output.networkState.accept(.networkDisconnect)
-                }
+                owner.coinId.accept(value)
             }
             .disposed(by: disposeBag)
     }
     
     @objc private func updateCoinListNoti(_ notification: Notification) {
         guard let updatedCoinId = notification.userInfo?["coinId"] as? String,
-        let coinIdOnScreen = coinId.value else { return }
+              let coinIdOnScreen = coinId.value else { return }
         if updatedCoinId == coinIdOnScreen {
             coinId.accept(updatedCoinId)
         }

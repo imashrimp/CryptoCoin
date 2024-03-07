@@ -15,7 +15,7 @@ final class NetworkMonitor {
     private let monitor: NWPathMonitor
     let networkConnected = BehaviorSubject<Bool?>(value: nil)
     
-    init() {
+    private init() {
         monitor = NWPathMonitor()
         dump(monitor)
         startMonitoring()
@@ -24,9 +24,7 @@ final class NetworkMonitor {
     private func startMonitoring() {
         monitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
-                
                 let networkStatus = path.status == .satisfied
-                
                 self?.networkConnected.onNext(networkStatus)
             }
         }

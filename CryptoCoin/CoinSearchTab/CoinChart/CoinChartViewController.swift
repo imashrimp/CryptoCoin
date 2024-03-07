@@ -36,7 +36,8 @@ final class CoinChartViewController: BaseViewController {
         let coinData = PublishRelay<(AlertPresentEnum, String)>()
         
         let input = CoinChartViewModel.Input(likeButtonTapped: baseView.likeNavigationBarButton.rx.tap,
-                                             alertActionTapped: coinData)
+                                             alertActionTapped: coinData, 
+                                             updateChartData: baseView.badNetworkView.networkRetryButton.rx.tap)
         
         viewModel.transform(input: input)
         
@@ -141,12 +142,29 @@ final class CoinChartViewController: BaseViewController {
         output
             .networkError
             .bind(with: self) { owner, value in
+                print("**", value)
                 owner.alert(title: value,
                             rightButtonTitle: "확인",
                             rightButtonStyle: .default)
             }
             .disposed(by: disposeBag)
         
+        output
+            .networkState
+            .bind(with: self) { owner, value in
+                switch value {
+                case .networkDisconnect:
+                    owner.baseView.badNetworkView.isHidden = false
+                    owner.navigationItem.rightBarButtonItem = nil
+                case .connectedWithoutData:
+                    owner.baseView.badNetworkView.isHidden = true
+                    owner.navigationItem.rightBarButtonItem = owner.baseView.likeNavigationBarButton
+                case .connectedWithData:
+                    owner.baseView.badNetworkView.isHidden = true
+                    owner.navigationItem.rightBarButtonItem = owner.baseView.likeNavigationBarButton
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configure() {

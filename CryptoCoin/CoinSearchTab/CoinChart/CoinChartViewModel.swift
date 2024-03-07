@@ -23,6 +23,7 @@ final class CoinChartViewModel {
     struct Input {
         let likeButtonTapped: ControlEvent<Void>
         let alertActionTapped: PublishRelay<(AlertPresentEnum, String)>
+        let updateChartData: ControlEvent<Void>
     }
     
     struct Output {
@@ -31,6 +32,7 @@ final class CoinChartViewModel {
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
         let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
         let networkError = PublishSubject<String>()
+        let networkState = PublishRelay<BackgroundViewState>()
     }
     
     init(coinId: String) {
@@ -54,10 +56,7 @@ final class CoinChartViewModel {
     func transform(input: Input) {
         
         coinId
-            .map{
-                guard let coinId = $0 else { return "" }
-                return coinId
-            }
+            .compactMap { $0 }
             .map { return CoinChartRequestModel(vs_currency: "krw", ids: $0, sparkline: "true" ) }
             .flatMap { NetworkManager.getCoinChartInfo(query: $0) }
             .bind(with: self) { owner, value in
@@ -66,6 +65,7 @@ final class CoinChartViewModel {
                     guard let coinSaved = owner.repository?.checkCoinSaveState(coinId: data.id) else { return }
                     owner.output.saveButtonState.accept(coinSaved)
                     owner.output.coinChartData.onNext(data)
+                    owner.output.networkState.accept(.connectedWithData)
                     
                     let plusOrMinus = data.priceChangePercentage24H.prefix(1)
                     
@@ -77,7 +77,6 @@ final class CoinChartViewModel {
                 case .failure(let error):
                     owner.output.networkError.onNext(error.description)
                 }
-                
             }
             .disposed(by: disposeBag)
         
@@ -124,6 +123,25 @@ final class CoinChartViewModel {
                 }
             }
             .disposed(by: disposeBag)
+        
+        input
+            .updateChartData
+            .withLatestFrom(coinId)
+            .compactMap { $0 }
+            .bind(with: self) { owner, value in
+                owner.coinId.accept(value)
+            }
+            .disposed(by: disposeBag)
+        
+        NetworkMonitor.shared.networkConnected
+            .compactMap { $0 }
+            .filter { $0 == false }
+            .bind(with: self) { owner, _ in
+                owner.output.networkState.accept(.networkDisconnect)
+            }
+            .disposed(by: disposeBag)
+        
+        
     }
     
     @objc private func updateCoinListNoti(_ notification: Notification) {
