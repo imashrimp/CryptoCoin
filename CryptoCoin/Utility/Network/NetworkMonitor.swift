@@ -18,12 +18,7 @@ final class NetworkMonitor {
     init() {
         monitor = NWPathMonitor()
         dump(monitor)
-        print("------------")
         startMonitoring()
-    }
-    
-    deinit {
-        stopMonitoring()
     }
     
     private func startMonitoring() {

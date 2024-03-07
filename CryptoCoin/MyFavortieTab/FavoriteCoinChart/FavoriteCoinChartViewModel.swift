@@ -31,6 +31,8 @@ final class FavoriteCoinChartViewModel {
         let priceChangePercentLabelTextColor = PublishSubject<Bool>()
         let presentAlert = PublishRelay<(AlertPresentEnum, String)>()
         let networkError = PublishSubject<String>()
+//        let networkState = BehaviorRelay<BackgroundViewState>(value: .connectedWithoutData)
+        let networkState = PublishRelay<BackgroundViewState>()
     }
     
     init(coinID: String) {
@@ -114,6 +116,17 @@ final class FavoriteCoinChartViewModel {
                                                     userInfo: ["coinId": value.1])
                 case .overLimit:
                     return
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        NetworkMonitor.shared.networkConnected
+            .compactMap { $0 }
+            .bind(with: self) { owner, value in
+                if value {
+                    owner.output.networkState.accept(.connectedWithData)
+                } else {
+                    owner.output.networkState.accept(.networkDisconnect)
                 }
             }
             .disposed(by: disposeBag)

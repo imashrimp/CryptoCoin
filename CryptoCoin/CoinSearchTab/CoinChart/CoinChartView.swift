@@ -134,6 +134,8 @@ final class CoinChartView: BaseView {
         return view
     }()
     
+    let badNetworkView = EmptyDataView(viewState: .networkDisconnect)
+    
     override func configure() {
         super.configure()
         [
@@ -145,7 +147,8 @@ final class CoinChartView: BaseView {
             highPriceStackView,
             lowPriceStackView,
             lineChart,
-            updateDateLabel
+            updateDateLabel,
+            badNetworkView
         ].forEach { addSubview($0) }
         
         [
@@ -208,6 +211,10 @@ final class CoinChartView: BaseView {
             $0.top.equalTo(lineChart.snp.bottom).offset(8)
             $0.trailing.equalToSuperview().inset(16)
             $0.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        badNetworkView.snp.makeConstraints {
+            $0.edges.equalTo(safeAreaLayoutGuide)
         }
     }
 }

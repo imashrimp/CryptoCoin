@@ -146,6 +146,20 @@ final class FavoriteCoinChartViewController: BaseViewController {
                             rightButtonStyle: .default)
             }
             .disposed(by: disposeBag)
+        
+        output
+            .networkState
+            .bind(with: self) { owner, value in
+                switch value {
+                case .networkDisconnect:
+                    owner.baseView.badNetworkView.isHidden = false
+                case .connectedWithoutData:
+                    owner.baseView.badNetworkView.isHidden = true
+                case .connectedWithData:
+                    return
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     override func configure() {
