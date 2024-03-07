@@ -11,15 +11,11 @@ final class MainTabBarController: UITabBarController, UITabBarControllerDelegate
 
     private let viewModel = MainTabBarViewModel()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
         self.tabBar.tintColor = UIColor(hexCode: ColorHexCode.purple.colorCode)
         self.tabBar.barTintColor = UIColor(hexCode: ColorHexCode.gray.colorCode)
-        self.delegate = self
         
         let trendingVC = UINavigationController(rootViewController: TrendingViewController(viewModel: TrendingViewModel(coinArr: viewModel.output.savedCoinArr.value)))
         let coinSearchVC = UINavigationController(rootViewController: CoinSearchViewController(viewModel: SearchCoinViewModel()))

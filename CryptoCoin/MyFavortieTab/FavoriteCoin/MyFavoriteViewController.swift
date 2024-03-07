@@ -44,18 +44,12 @@ final class MyFavoriteViewController: BaseViewController {
             .bind(with: self) { owner, value in
                 switch value {
                 case .networkDisconnect:
-//                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(
-//                        message: "저장된 코인을 불러오지 못했습니다",
-//                        buttonHidden: false,
-//                        retrtyButtonTapped: {
-//                        }
-//                    )
-                    print("저장된 코인을 불러오지 못했습니다")
+                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(viewState: value,
+                                                                                             retryButtonCompletion: {
+                        updateFavoriteCoinList.accept(())
+                    })
                 case .connectedWithoutData:
-//                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(
-//                        message: "저장된 코인이 없습니다"
-//                    )
-                    print("저장된 코인이 없습니다")
+                    owner.baseView.favoriteCoinCollectionView.backgroundView = EmptyDataView(viewState: value)
                 case .connectedWithData:
                     owner.baseView.favoriteCoinCollectionView.backgroundView = nil
                 }
@@ -86,6 +80,13 @@ final class MyFavoriteViewController: BaseViewController {
                 
                 owner.navigationController?.pushViewController(FavoriteCoinChartViewController(viewModel: viewModel),
                                                                animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        output
+            .networkError
+            .bind(with: self) { owner, value in
+                owner.alert(title: value)
             }
             .disposed(by: disposeBag)
     }

@@ -61,7 +61,6 @@ final class TrendingViewModel {
                         TrendEntity(sectionTitle: "My Favorite",
                                     data: data)
                     ]
-                    
                     let trendResult = NetworkManager.getTrendingCoinList().share()
                     trendResult
                         .bind(with: self) { owner, value in

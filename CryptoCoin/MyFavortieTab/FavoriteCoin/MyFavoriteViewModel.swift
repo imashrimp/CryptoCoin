@@ -47,36 +47,35 @@ final class MyFavoriteViewModel {
     
     func transform(input: Input) {
         
-//        let coinID = BehaviorRelay<String?>(value: nil)
-        let coinID = PublishRelay<String>()
+        let coinID = BehaviorRelay<String>(value: "")
     
         savedCoinArr
             .bind(with: self) { owner, value in
                 let coinIDs = value.map { $0.coinID }.joined(separator: ",")
-
-                if value.isEmpty {
-                    owner.output.backgroundViewState.accept(.connectedWithoutData)
-                    owner.output.favoriteCoinArr.accept([])
-                } else {
-                    owner.output.backgroundViewState.accept(.connectedWithData)
+//                if value.isEmpty {
+//                    owner.output.favoriteCoinArr.accept([])
+//                } else {
                     coinID.accept(coinIDs)
-                }
+//                }
             }
             .disposed(by: disposeBag)
         
         coinID
-//            .map {
-//                guard let coinIds = $0 else { return }
-//                return coinIds
-//            }
+            .filter { !$0.isEmpty }
             .map { return FavoriteCoinsRequestModel(vs_currency: "krw", ids: $0) }
             .flatMap { NetworkManager.getFavoriteCoinArr(query: $0) }
             .bind(with: self) { owner, value in
                 switch value {
                 case .success(let data):
                     owner.output.favoriteCoinArr.accept(data)
+                    if data.isEmpty {
+                        owner.output.backgroundViewState.accept(.connectedWithoutData)
+                    } else {
+                        owner.output.backgroundViewState.accept(.connectedWithData)
+                    }
                 case .failure(let error):
                     owner.output.networkError.onNext(error.description)
+                    owner.output.backgroundViewState.accept(.networkDisconnect)
                 }
             }
             .disposed(by: disposeBag)
@@ -92,15 +91,24 @@ final class MyFavoriteViewModel {
             .updateFavoriteCoinList
             .bind(with: self) { owner, _ in
                 guard let savedCoinList = owner.repository?.readSavedCryptoCoinList() else { return }
-                let coinIDs = savedCoinList.map { $0.coinID }.joined(separator: ",")
-                if coinIDs.isEmpty {
-                    owner.output.favoriteCoinArr.accept([])
-                    owner.output.backgroundViewState.accept(.connectedWithoutData)
-                } else {
-                    coinID.accept(coinIDs)
-                    owner.output.backgroundViewState.accept(.connectedWithData)
-                }
-
+                owner.savedCoinArr.accept(savedCoinList)
+//                let coinIDs = savedCoinList.map { $0.coinID }.joined(separator: ",")
+//                if coinIDs.isEmpty {
+//                    owner.output.favoriteCoinArr.accept([])
+//                    owner.output.backgroundViewState.accept(.connectedWithoutData)
+//                } else {
+//                    coinID.accept(coinIDs)
+//                    owner.output.backgroundViewState.accept(.connectedWithData)
+//                }
+            }
+            .disposed(by: disposeBag)
+        
+        NetworkMonitor.shared.networkConnected
+            .compactMap { $0 }
+            .filter { $0 == false }
+            .bind(with: self) { owner, value in
+                owner.output.favoriteCoinArr.accept([])
+                owner.output.backgroundViewState.accept(.networkDisconnect)
             }
             .disposed(by: disposeBag)
     }

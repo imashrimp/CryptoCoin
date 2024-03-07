@@ -12,7 +12,7 @@ extension UIViewController {
     typealias AlertActionHandler = ((UIAlertAction) -> Void)
     
     func alert(title: String,
-               rightButtonTitle: String? = nil,
+               rightButtonTitle: String? = "확인",
                rightButtonStyle: UIAlertAction.Style = .default,
                rightButtonHandler: AlertActionHandler? = nil,
                defaultButtonTitle: String? = nil) {
