@@ -28,7 +28,7 @@ final class SearchCoinViewModel {
     }
     
     struct Output {
-        let tableViewBackgroundViewState = BehaviorRelay<BackgroundViewState>(value: .connectedWithoutData)
+        let tableViewBackgroundViewState = PublishRelay<BackgroundViewState>()
         let searchedCoinList = BehaviorRelay<[SearchedCoinEntity]>(value: [])
         let searchKeyword = BehaviorRelay<String>(value: "")
         let transitionToCoinChartView = PublishSubject<String>()
@@ -158,6 +158,14 @@ final class SearchCoinViewModel {
                 let coinIds = savedCoinArr.map{ $0.coinID }
                 owner.output.savedCoinIds.accept(coinIds)
                 owner.output.updateSavedCoinlist.accept(())
+            }
+            .disposed(by: disposeBag)
+        
+        NetworkMonitor.shared.networkConnected
+            .compactMap { $0 }
+            .filter { $0 == false }
+            .bind(with: self) { owner, value in
+                owner.output.tableViewBackgroundViewState.accept(BackgroundViewState.networkDisconnect)
             }
             .disposed(by: disposeBag)
     }

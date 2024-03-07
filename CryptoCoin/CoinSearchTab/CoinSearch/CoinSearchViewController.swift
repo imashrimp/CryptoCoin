@@ -49,16 +49,11 @@ final class CoinSearchViewController: BaseViewController {
             .bind(with: self) { owner, value in
                 switch value {
                 case .networkDisconnect:
-                    owner.baseView.searchCoinTableView.backgroundView = nil//EmptyDataView(
-//                        message: "검색결과를 불러오지 못했습니다",
-//                        buttonHidden: false,
-//                        retrtyButtonTapped: {
-//                        }
-//                    )
+                    let backgroundView = EmptyDataView(viewState: value)
+                    backgroundView.networkRetryButton.isHidden = true
+                    owner.baseView.searchCoinTableView.backgroundView = backgroundView
                 case .connectedWithoutData:
-                    owner.baseView.searchCoinTableView.backgroundView = nil//EmptyDataView(
-//                        message: "검색된 코인이 없습니다"
-//                    )
+                    owner.baseView.searchCoinTableView.backgroundView = EmptyDataView(viewState: value)
                 case .connectedWithData:
                     owner.baseView.searchCoinTableView.backgroundView = nil
                 }
