@@ -1,9 +1,6 @@
 # 🪙 Crypto Coin Watch
-<img src = "https://github.com/imashrimp/CryptoCoin/assets/114081840/1b746b07-2862-4522-90db-84313d2eb900.png" width="18%" height="40%">
-<img src = "https://github.com/imashrimp/CryptoCoin/assets/114081840/475f60e4-3e02-4b5b-80d2-b441bdb0be7d" width="18%" height="40%">
-<img src = "https://github.com/imashrimp/CryptoCoin/assets/114081840/f51b5b80-ad27-4774-9c60-729191861bb1" width="18%" height="40%">
-<img src = "https://github.com/imashrimp/CryptoCoin/assets/114081840/ce7a9d1e-e625-4afb-b99a-6e249cf27448" width="18%" height="40%">
-<img src = "https://github.com/imashrimp/CryptoCoin/assets/114081840/aaf78ddc-ccfb-4bda-bf72-906a2ed1af9d)" width="18%" height="40%">
+<img width="721" alt="스크린샷 2024-03-08 오전 11 53 43" src="https://github.com/imashrimp/CryptoCoin/assets/114081840/9016925b-225f-4b2e-99e9-da7a380ddf32">
+<img width="360" alt="스크린샷 2024-03-08 오전 11 57 48" src="https://github.com/imashrimp/CryptoCoin/assets/114081840/9c587c3c-f39c-4140-a75c-68c16281c77f">
 
 
 ---
