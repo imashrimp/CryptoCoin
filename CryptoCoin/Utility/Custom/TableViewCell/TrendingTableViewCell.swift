@@ -25,6 +25,7 @@ final class TrendingTableViewCell: BaseTableViewCell {
         view.register(TrendingCollectionViewCell.self,
                       forCellWithReuseIdentifier: TrendingCollectionViewCell.id)
         view.showsHorizontalScrollIndicator = false
+        view.decelerationRate = .fast
         return view
     }()
     
@@ -54,6 +55,8 @@ final class TrendingTableViewCell: BaseTableViewCell {
     
     override func configure() {
         super.configure()
+        trendingCollectionView.delegate = self
+        
         contentView.backgroundColor = UIColor(hexCode: ColorHexCode.white.colorCode)
         [
             cellTitleLabel,
@@ -78,5 +81,26 @@ final class TrendingTableViewCell: BaseTableViewCell {
         super.prepareForReuse()
         trendingCollectionView.reloadData()
         disposeBag = DisposeBag()
+    }
+    
+}
+
+extension TrendingTableViewCell: UICollectionViewDelegate {
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        guard let layout = self.trendingCollectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        
+        let cellWidthIncludingSpacing = layout.itemSize.width + layout.minimumLineSpacing
+        
+        let estimatedIndex = scrollView.contentOffset.x / cellWidthIncludingSpacing
+        let index: Int
+        if velocity.x > 0 {
+            index = Int(ceil(estimatedIndex))
+        } else if velocity.x < 0 {
+            index = Int(floor(estimatedIndex))
+        } else {
+            index = Int(round(estimatedIndex))
+        }
+        
+        targetContentOffset.pointee = CGPoint(x: CGFloat(index) * cellWidthIncludingSpacing, y: 0)
     }
 }

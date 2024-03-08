@@ -73,6 +73,7 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
     
     override func setConstraints() {
 
+        rankLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         rankLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(12)
             $0.centerY.equalTo(coinInfoComponent)
@@ -83,13 +84,14 @@ final class TrendingCollectionViewCell: BaseCollectionViewCell {
             $0.size.equalTo(36)
             $0.centerY.equalTo(coinInfoComponent)
         }
-        
+
         coinInfoComponent.snp.makeConstraints {
             $0.leading.equalTo(logoImageView.snp.trailing).offset(16)
             $0.verticalEdges.equalToSuperview().inset(8)
-            $0.trailing.lessThanOrEqualTo(coinPriceComponent.snp.leading).inset(4)
+            $0.trailing.lessThanOrEqualTo(coinPriceComponent.snp.leading).inset(-4)
         }
-        
+
+        coinPriceComponent.setContentCompressionResistancePriority(.required, for: .horizontal)
         coinPriceComponent.snp.makeConstraints {
             $0.centerY.equalTo(coinInfoComponent)
             $0.trailing.equalToSuperview().inset(16)
